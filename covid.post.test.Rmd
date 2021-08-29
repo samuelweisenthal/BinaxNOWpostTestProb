@@ -1,0 +1,115 @@
+---
+title: "Post test probability of disease in asymptomatic adult after negative rapid antigen coronavirus test under varying pre-test probabilities "
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Caution: this is quickly put together.  However, it is not easy to find one of these types of calculations already done - hopefully this might be of use to someone sometime.
+
+We want to know: if someone is asymptomatic and they have 
+a BinaxNOW rapid antigen test that shows a negative result
+what is the probability that they have a coronavirus infection?
+
+For example per current guidelines if you are exposed, vaccinated and have a negative test
+you can act differently than if you are exposed, vaccinated and have positive test.
+hence this is important information
+
+These tests are broadly designed such that a positive result implies usually positive
+(there are few false positives, or high specificity)
+but a negative result might be a false negative.
+Those last sentences are essentially what is said in the test kit
+
+It is however sort of difficult to interpret this.
+
+We want to know the probability that someone has the disease given a test, 1-NPV
+This is more intuitive.  It is possible to get this, but you have to calculate.
+So I will do the calculations here
+
+the issue is that any posterior probability depends on a prior.  
+Sometimes this is "prevalence".  
+However, eg,  your prior might be different than the prevalence;
+you may stay in more, for example, or have had contact recently with an 
+infected individual.
+For a large prior, we see that a negative test 
+result is not very conclusive.  Doing serial testing and getting 2 negative results
+is more conclusive, but of course it depends on the original prior.
+
+We could of course say that the prior is too difficult to determine and throw our hands up
+but in doing so we are implicitly acting according to some prior.
+Hence, here, I will show post test probabilities for a variety of priors.
+this at least helps us think about what that prior is explicitly
+
+Note that the numbers below are applicable to symptomatic adults or children - both have
+different sensitivities and specificities. The code could be changed though for that
+
+I checked the number again the PPV/NPV for one of the studies listed below, and it was close
+but not identical
+
+I also checked my calculation against
+
+Diagnostic test calculator (version 2010042101). Copyright (c) 2002-2006 by Alan Schwartz <alansz@uic.edu>. 
+
+and our values matched. Use this at your own risk however. These are fairly standard calculations, but if you find
+a mistake defintiely let me know!
+
+To calculate the probability of disease given a negative BinaxNOW test, you 
+must calculate the likelihood ratio, which depends on sensitivity and specificity.
+Some believe this is not the ideal way to do this. See, eg
+
+Moons, Karel GM, and Frank E. Harrell. "Sensitivity and specificity should be de-emphasized in diagnostic accuracy studies." Academic radiology 10.6 (2003): 670-672. http://hbiostat.org/papers/feh/moons.radiology.pdf
+
+However we must work with these quantities here. Hence
+
+Likelihood ratio
+```{r }
+like.rat=function(sens,spec,pretest){(1-sens)/((1-sens)*pretest+(spec)*(1-pretest))}
+pretest=0.2
+```
+
+posterior probability of disease given negative test is likelihood ratio * prior
+
+
+```{r }
+post.test.prob = function(sens,spec,pretest){
+  like.rat(sens=sens,spec=spec,pretest=pretest)*pretest
+}
+```
+
+compute over a grid of priors
+
+```{r }
+pre.tests = seq(0,1,0.01)
+get.post.tests = function(sens,spec,pretests){
+post.tests = c()
+for(i in 1:length(pre.tests)){
+  post.tests[i]=post.test.prob(sens=sens,spec=spec,pretest=pre.tests[i])
+}
+post.tests
+}
+```
+
+compute separately for two studies [1,2] using sens/spec for asymptomatic 
+each study has diff sens, but similar spec
+```{r }
+post.tests.6=get.post.tests(sens=0.64,spec=1,pretests)
+plot(pre.tests,post.tests.6,type='l',xlab="Pre.test: P(dz+)",ylab="Post.test: P(dz+|test-)",lty=1)
+post.tests.36=get.post.tests(sens=0.36,spec=1,pretests)
+lines(pre.tests,post.tests.36,lty=2)
+legend("topleft",c("sens=0.70 (Prince-Guerra 2021)","sens=0.36 (Pollack 2021)"),lty=c(1,2))
+```
+With serial testing, you update your value on the x axis to reflect your previous post test probability
+eg if your posterior after one test is 0.2, that becomes your prior for the second test
+hence serial testing is much better than one test
+
+References
+
+[1] Prince-Guerra JL, Almendares O, Nolen LD, Gunn JKL, Dale AP, Buono SA, Deutsch-Feldman M, Suppiah S, Hao L, Zeng Y, Stevens VA, Knipe K, Pompey J, Atherstone C, Bui DP, Powell T, Tamin A, Harcourt JL, Shewmaker PL, Medrzycki M, Wong P, Jain S, Tejada-Strop A, Rogers S, Emery B, Wang H, Petway M, Bohannon C, Folster JM, MacNeil A, Salerno R, Kuhnert-Tallman W, Tate JE, Thornburg NJ, Kirking HL, Sheiban K, Kudrna J, Cullen T, Komatsu KK, Villanueva JM, Rose DA, Neatherlin JC, Anderson M, Rota PA, Honein MA, Bower WA. Evaluation of Abbott BinaxNOW Rapid Antigen Test for SARS-CoV-2 Infection at Two Community-Based Testing Sites - Pima County, Arizona, November 3-17, 2020. MMWR Morb Mortal Wkly Rep. 2021 Jan 22;70(3):100-105. doi: 10.15585/mmwr.mm7003e3. Erratum in: MMWR Morb Mortal Wkly Rep. 2021 Jan 29;70(4):144. PMID: 33476316; PMCID: PMC7821766.
+
+
+[2] Pollock NR, Jacobs JR, Tran K, Cranston AE, Smith S, O'Kane CY, Roady TJ, Moran A, Scarry A, Carroll M, Volinsky L, Perez G, Patel P, Gabriel S, Lennon NJ, Madoff LC, Brown C, Smole SC. Performance and Implementation Evaluation of the Abbott BinaxNOW Rapid Antigen Test in a High-Throughput Drive-Through Community Testing Site in Massachusetts. J Clin Microbiol. 2021 Apr 20;59(5):e00083-21. doi: 10.1128/JCM.00083-21. PMID: 33622768; PMCID: PMC8091851.
+
