@@ -1,5 +1,5 @@
 ---
-title: "I am asymptomatic with a negative rapid test. What is the probability I have coronavirus?"
+title: "I am at risk, but asymptomatic with a negative rapid test. What is the probability I have coronavirus?"
 output:
   pdf_document: default
   html_document: default
