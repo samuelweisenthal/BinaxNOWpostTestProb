@@ -1,5 +1,5 @@
 ---
-title: "Determining post-test probability of Covid-19"
+title: "Post test probability of disease in sympomatic and asymptomatic adult after negative BinaxNOW rapid antigen coronavirus test under varying pre-test probabilities "
 output:
   pdf_document: default
   html_document: default
@@ -9,54 +9,69 @@ output:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-Caution: I use standard methods, but this is quickly put together -- use at your own risk.  If you find any mistakes, let me know and I will correct them.  There are calculators online, but it is not easy to find the plot below.  Hopefully it might help someone else in a similar situation.
+Caution: this is quickly put together.  However, it is not easy to find one of these types of calculations already done - hopefully this might be of use to someone sometime.
 
-In summary, I believe I may be at risk of having coronavirus, but I am asymptomatic.  I take a BinaxNOW rapid antigen test and it shows a negative result.  How should I therefore go about the next week? 
+We want to know: if someone is asymptomatic and they have 
+a BinaxNOW rapid antigen test that shows a negative result
+what is the probability that they have a coronavirus infection?
 
-Per current guidelines, if you are exposed, vaccinated and have a negative test you can go about life fairly normally.  However, I had a clinic this week with immunocompromised patients, and I wanted to be sure that I would not potentially expose anyone (I am just a trainee, so I am nonessential). So, I wanted the most actionable risk estimate I could get. So, I hoped to find the probability that I have a coronavirus infection given that I test negative and the probability that I have a coronavirus infection if I test negative twice.
+For example per current guidelines if you are exposed, vaccinated and have a negative test
+you can act differently than if you are exposed, vaccinated and have positive test.
+hence this is important information
 
-These rapid tests are sometimes designed such that a positive result implies that the true status is positive, but a negative result might be a false negative. This is essentially what is said in the test kit. 
-It is however sort of difficult to interpret this. This means that there are few false positives, or high specificity, and sometimes false negatives, or lower sensitivity.  This is also sort of difficult to interpret.  I hope here to give you a result that is easier to interpret.
+These tests are broadly designed such that a positive result implies usually positive
+(there are few false positives, or high specificity)
+but a negative result might be a false negative.
+Those last sentences are essentially what is said in the test kit
 
-We want to know the probability that someone has the disease given a test, which is is more intuitive.  It is possible to get this, but you have to calculate using Bayes rule. I will do the calculations here for you.
+It is however sort of difficult to interpret this.
 
-The issue is that any post test probability (posterior) depends on a pre-test probability (prior).  Sometimes this is "prevalence".  However, your prior might be different than the prevalence;
-you may stay in more, for example, or have had contact recently with an infected individual.
+We want to know the probability that someone has the disease given a test, 1-NPV
+This is more intuitive.  It is possible to get this, but you have to calculate.
+So I will do the calculations here
 
-For a large prior, we see that a negative test  result is not very conclusive.  Doing serial testing and getting 2 negative results is more conclusive, but of course it depends on the original prior.
+the issue is that any posterior probability depends on a prior.  
+Sometimes this is "prevalence".  
+However, eg,  your prior might be different than the prevalence;
+you may stay in more, for example, or have had contact recently with an 
+infected individual.
+For a large prior, we see that a negative test 
+result is not very conclusive.  Doing serial testing and getting 2 negative results
+is more conclusive, but of course it depends on the original prior.
 
-We could of course say that the prior is too difficult to determine and throw our hands up, but in doing so we are implicitly acting according to some prior, and just choosing not to discuss it further. From a decision analysis standpoint, attending a clinic with immunocompromised patients could have great cost, so it is worth trying to be explicit about how we are making this decision.  Here, I will show post test probabilities for a variety of priors. 
+We could of course say that the prior is too difficult to determine and throw our hands up
+but in doing so we are implicitly acting according to some prior.
+Hence, here, I will show post test probabilities for a variety of priors.
+this at least helps us think about what that prior is explicitly
 
-Note that the numbers below are not applicable to symptomatic adults or children.  The studies I found stratify by symptoms and age and therefore these grouops have different sensitivities and specificities. The code could be changed though for that if needed.
+Note that the numbers below are applicable to symptomatic adults or children - both have
+different sensitivities and specificities. The code could be changed though for that
 
-I checked the number against the PPV/NPV for one of the studies listed below, and it was close
+I checked the number again the PPV/NPV for one of the studies listed below, and it was close
 but not identical
 
-I also checked my Bayes rule numbers against the calculator (http://araw.mede.uic.edu/cgi-bin/testcalc.pl), written by Alan Schwartz <alansz@uic.edu>, and our values matched. 
+I also checked my calculation against
 
-**Update: (showed work)**
+Diagnostic test calculator (version 2010042101). Copyright (c) 2002-2006 by Alan Schwartz <alansz@uic.edu>. 
 
-The posterior is
+and our values matched. Use this at your own risk however. These are fairly standard calculations, but if you find
+a mistake defintiely let me know!
 
-$P(dz+|test-)=\frac{P(test-|dz+)}{P(test-)}P(dz+)=\frac{1-P(test+|dz+)}{P(test-|dz-)P(dz-)+P(test-|dz+)P(dz+)}P(dz+).$
+To calculate the probability of disease given a negative BinaxNOW test, you 
+must calculate the likelihood ratio, which depends on sensitivity and specificity.
+Some believe this is not the ideal way to do this. See, eg
 
-Note that
+Moons, Karel GM, and Frank E. Harrell. "Sensitivity and specificity should be de-emphasized in diagnostic accuracy studies." Academic radiology 10.6 (2003): 670-672. http://hbiostat.org/papers/feh/moons.radiology.pdf
 
-Sensitivity = $P(test+|dz+),$
-Specificity = $P(test-|dz-).$
+However we must work with these quantities here. Hence
 
-Hence,
-$\frac{1-P(test+|dz+)}{P(test-|dz-)P(dz-)+P(test-|dz+)P(dz+)}=\frac{1-sens}{spec*(1-P(dz+))+(1-sens)*P(dz+)}$
-
-is the likelihood ratio in terms of quantities that we can glean from the studies.
-
-
+Likelihood ratio
 ```{r }
 like.rat=function(sens,spec,pretest){(1-sens)/((1-sens)*pretest+(spec)*(1-pretest))}
 pretest=0.2
 ```
 
-The posterior probability of having the disease given a negative test result is (likelihood ratio) * prior.
+posterior probability of disease given negative test is likelihood ratio * prior
 
 
 ```{r }
@@ -65,7 +80,7 @@ post.test.prob = function(sens,spec,pretest){
 }
 ```
 
-Since the prior/pre-test probability is subjective, we can use `R' to plot the post test probability over a range.
+compute over a grid of priors
 
 ```{r }
 pre.tests = seq(0,1,0.01)
@@ -78,32 +93,43 @@ post.tests
 }
 ```
 
-I will compute two different post-test probability lines, one for each study [1,2], using the reported sensitivity  and specificity for asymptomatic adults. Each study has different sensitivity, but similar specificity.  Hence I will label the study by the sensitivity.
-
+compute separately for two studies [1,2] using sens/spec for asymptomatic 
+each study has diff sens, but similar spec
 ```{r }
-post.tests.6=get.post.tests(sens=0.70,spec=1,pretests)
-plot(pre.tests,post.tests.6,type='l',xlab="Pre.test: P(dz+)",ylab="Post.test: P(dz+|test-)",lty=1,axes=FALSE)
-axis(side = 1, at = seq(0,1,0.1))
-axis(side = 2, at = seq(0,1,0.1))
-grid()
+post.tests.6=get.post.tests(sens=0.64,spec=1,pretests)
+post.tests.6l=get.post.tests(sens=0.57,spec=1,pretests)
+post.tests.6u=get.post.tests(sens=0.71,spec=1,pretests)
+
+plot.p = function(){
+lwd.point = 2
+plot(pre.tests,post.tests.6,type='l',xlab="Pre.test: P(dz+)",ylab="Post.test: P(dz+|test-)",lty=1,lwd=lwd.point,main='Post Test Prob given Negative BinaxNOW test in Adult')
+lines(pre.tests,post.tests.6u,lty=2,col=1)
+lines(pre.tests,post.tests.6l,lty=2,col=1)
 post.tests.36=get.post.tests(sens=0.36,spec=1,pretests)
-lines(pre.tests,post.tests.36,lty=2)
-legend("topleft",c("sens=0.70 (Pollack 2021)","sens=0.36  (Prince-Guerra 2021)"),lty=c(1,2))
+lines(pre.tests,post.tests.36,lty=1,lwd=lwd.point,col=2)
+post.tests.36u = get.post.tests(sens=.45,spec=1)
+post.tests.36l = get.post.tests(sens=.27, spec=1)
+lines(pre.tests,post.tests.36u,lty=2,col=2)
+lines(pre.tests,post.tests.36l,lty=2,col=2)
+legend("topleft",
+       c(" Symptomatic Adult; sens=0.64 (0.57,0.71)","Asymptomatic Adult; sens=0.36 (0.27,0.45)"),
+       lty=c(1,1),col=c(1,2),lwd=c(lwd.point,lwd.point))
+}
+
+png("post.test.png")
+plot.p()
+dev.off()
+plot.p()
 ```
-
-So, suppose that I am really not sure.  I was in proximity to someone with the disease.  Then maybe my pretest probability is a coin flip, 0.5.  We trace this up to between the tests to get a post test probability of about 0.3 (very rough).  You can get more exact number with the function above, but the main point is that the post test probability, even with a negative test, is not very low.  So, given one test, with the prior of 0.5, it is probably best not to go out too much, and definitely risky to go to a clinic with immunocompromised patients, especially if you are not essential. 
-
-If I take a second test, I can update my old pre test probability to be my new post test probability.  In this case, I start around 0.3 on the x-axis and go to about 0.1.  Still, this is a sizeable risk. You can see however why serial testing is better than one test.
-
-In general, I decided not to attend the clinic, and also to switch a meeting I had this week to Zoom.
-
-If you think that the probability of disease given a negative result is useful, you might also be interested in  [3]. 
+With serial testing, you update your value on the x axis to reflect your previous post test probability
+eg if your posterior after one test is 0.2, that becomes your prior for the second test
+hence serial testing is much better than one test
 
 References
 
 [1] Prince-Guerra JL, Almendares O, Nolen LD, Gunn JKL, Dale AP, Buono SA, Deutsch-Feldman M, Suppiah S, Hao L, Zeng Y, Stevens VA, Knipe K, Pompey J, Atherstone C, Bui DP, Powell T, Tamin A, Harcourt JL, Shewmaker PL, Medrzycki M, Wong P, Jain S, Tejada-Strop A, Rogers S, Emery B, Wang H, Petway M, Bohannon C, Folster JM, MacNeil A, Salerno R, Kuhnert-Tallman W, Tate JE, Thornburg NJ, Kirking HL, Sheiban K, Kudrna J, Cullen T, Komatsu KK, Villanueva JM, Rose DA, Neatherlin JC, Anderson M, Rota PA, Honein MA, Bower WA. Evaluation of Abbott BinaxNOW Rapid Antigen Test for SARS-CoV-2 Infection at Two Community-Based Testing Sites - Pima County, Arizona, November 3-17, 2020. MMWR Morb Mortal Wkly Rep. 2021 Jan 22;70(3):100-105. doi: 10.15585/mmwr.mm7003e3. Erratum in: MMWR Morb Mortal Wkly Rep. 2021 Jan 29;70(4):144. PMID: 33476316; PMCID: PMC7821766.
 
-
+<!--
 [2] Pollock NR, Jacobs JR, Tran K, Cranston AE, Smith S, O'Kane CY, Roady TJ, Moran A, Scarry A, Carroll M, Volinsky L, Perez G, Patel P, Gabriel S, Lennon NJ, Madoff LC, Brown C, Smole SC. Performance and Implementation Evaluation of the Abbott BinaxNOW Rapid Antigen Test in a High-Throughput Drive-Through Community Testing Site in Massachusetts. J Clin Microbiol. 2021 Apr 20;59(5):e00083-21. doi: 10.1128/JCM.00083-21. PMID: 33622768; PMCID: PMC8091851.
+-->
 
-[3] Moons, Karel GM, and Frank E. Harrell. "Sensitivity and specificity should be de-emphasized in diagnostic accuracy studies." Academic radiology 10.6 (2003): 670-672. http://hbiostat.org/papers/feh/moons.radiology.pdf
