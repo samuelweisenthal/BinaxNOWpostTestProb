@@ -7,28 +7,40 @@ output:
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+ library(latex2exp)
 ```
 
-Caution: this is quickly put together.  However, it is not easy to find one of these types of calculations already done - hopefully this might be of use to someone sometime.
+Hopefully this might be of use to someone sometime.
 
-We want to know: if someone is asymptomatic and they have 
-a BinaxNOW rapid antigen test that shows a negative result
-what is the probability that they have a coronavirus infection?
+We want to know: given
+a neagtive BinaxNOW rapid antigen test,
+what is the probability that someone has a coronavirus infection?
 
 For example per current guidelines if you are exposed, vaccinated and have a negative test
 you can act differently than if you are exposed, vaccinated and have positive test.
-hence this is important information
 
-These tests are broadly designed such that a positive result implies usually positive
-(there are few false positives, or high specificity)
+These tests are broadly designed such that a positive result implies positive
+(there are few false positives, or high specificity),
 but a negative result might be a false negative.
-Those last sentences are essentially what is said in the test kit
+Those last sentences are essentially what is given in the test kit
 
 It is however sort of difficult to interpret this.
 
 We want to know the probability that someone has the disease given a test, 1-NPV
 This is more intuitive.  It is possible to get this, but you have to calculate.
 So I will do the calculations here
+
+The posterior is
+
+$P(dz+|test-)=\frac{P(test-|dz+)}{P(test-)}P(dz+)=\frac{1-P(test+|dz+)}{P(test-|dz-)P(dz-)+P(test-|dz+)P(dz+)}P(dz+).$
+
+Note that
+
+$Sensitivity = P(test+|dz+)$
+$Specificity = P(test-|dz-)$
+
+Hence,
+$\frac{1-P(test+|dz+)}{P(test-|dz-)P(dz-)+P(test-|dz+)P(dz+)}=\frac{1-sens}{spec*(1-P(dz+))+(1-sens)*P(dz+)}$
 
 the issue is that any posterior probability depends on a prior.  
 Sometimes this is "prevalence".  
@@ -112,7 +124,7 @@ post.tests.36l = get.post.tests(sens=.27, spec=1)
 lines(pre.tests,post.tests.36u,lty=2,col=2)
 lines(pre.tests,post.tests.36l,lty=2,col=2)
 legend("topleft",
-       c(" Symptomatic Adult; sens=0.64 (0.57,0.71)","Asymptomatic Adult; sens=0.36 (0.27,0.45)"),
+       c(TeX(" P(test+|dz+,sx+)$\\approx$0.64 (0.57,0.71)"),TeX(" P(test+|dz+,sz-)$\\approx$0.36 (0.27,0.45)")),
        lty=c(1,1),col=c(1,2),lwd=c(lwd.point,lwd.point))
 }
 
