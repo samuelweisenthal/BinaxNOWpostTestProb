@@ -80,7 +80,6 @@ However we must work with these quantities here. Hence
 Likelihood ratio
 ```{r }
 like.rat=function(sens,spec,pretest){(1-sens)/((1-sens)*pretest+(spec)*(1-pretest))}
-pretest=0.2
 ```
 
 posterior probability of disease given negative test is likelihood ratio * prior
@@ -105,37 +104,59 @@ post.tests
 }
 ```
 
-compute separately for two studies [1,2] using sens/spec for asymptomatic 
-each study has diff sens, but similar spec
+compute using, from Prince-Guerra 2021, 
+\[
+ P(test+|dz+,sx+,ad+)\approx 0.64 (0.57,0.71)")
+ \]
+ and 
+ \[
+P(test+|dz+,sz-,ad+) \approx 0.36 (0.27,0.45)")
+\]
+```{r }
+
+plot.p = function(post.tests.6,post.tests.6l,post.tests.6u,
+                  post.tests.36,post.tests.36u,post.tests.36l,post.label){
+lwd.point = 2
+plot(pre.tests,post.tests.6,type='l',xlab="Pre-test: P(dz+|sx,ad)",ylab=post.label,lty=1,lwd=lwd.point,main='Post-test prob given negative BinaxNOW test\n (sx=symptoms, ad=adult)')
+lines(pre.tests,post.tests.6u,lty=2,col=1)
+lines(pre.tests,post.tests.6l,lty=2,col=1)
+xseq = seq(0,1,0.1)
+yseq = seq(0,1,0.1)
+for(x in xseq){
+  abline(v=x,col='gray')
+}
+
+for(y in yseq){
+  abline(h=y,col='gray')
+}
+
+lines(pre.tests,post.tests.36,lty=1,lwd=lwd.point,col=2)
+lines(pre.tests,post.tests.36u,lty=2,col=2)
+lines(pre.tests,post.tests.36l,lty=2,col=2)
+legend("topleft",
+       c(TeX("sx+,ad+"),TeX("sx-,ad+")),
+       lty=c(1,1),col=c(1,2),lwd=c(lwd.point,lwd.point))
+}
+```
+
 ```{r }
 post.tests.6=get.post.tests(sens=0.64,spec=1,pretests)
 post.tests.6l=get.post.tests(sens=0.57,spec=1,pretests)
 post.tests.6u=get.post.tests(sens=0.71,spec=1,pretests)
 
-plot.p = function(){
-lwd.point = 2
-plot(pre.tests,post.tests.6,type='l',xlab="Pre.test: P(dz+)",ylab="Post.test: P(dz+|test-)",lty=1,lwd=lwd.point,main='Post Test Prob given Negative BinaxNOW test in Adult')
-lines(pre.tests,post.tests.6u,lty=2,col=1)
-lines(pre.tests,post.tests.6l,lty=2,col=1)
 post.tests.36=get.post.tests(sens=0.36,spec=1,pretests)
-lines(pre.tests,post.tests.36,lty=1,lwd=lwd.point,col=2)
-post.tests.36u = get.post.tests(sens=.45,spec=1)
-post.tests.36l = get.post.tests(sens=.27, spec=1)
-lines(pre.tests,post.tests.36u,lty=2,col=2)
-lines(pre.tests,post.tests.36l,lty=2,col=2)
-legend("topleft",
-       c(TeX(" P(test+|dz+,sx+)$\\approx$0.64 (0.57,0.71)"),TeX(" P(test+|dz+,sz-)$\\approx$0.36 (0.27,0.45)")),
-       lty=c(1,1),col=c(1,2),lwd=c(lwd.point,lwd.point))
-}
+post.tests.36u = get.post.tests(sens=.45,spec=1,pretests)
+post.tests.36l = get.post.tests(sens=.27, spec=1,pretests)
 
 png("post.test.png")
-plot.p()
+plot.p(post.tests.6,post.tests.6l,post.tests.6u,
+                  post.tests.36,post.tests.36u,post.tests.36l,"Post-test: P(dz+|test-,sx,ad)")
 dev.off()
-plot.p()
+plot.p(post.tests.6,post.tests.6l,post.tests.6u,
+                  post.tests.36,post.tests.36u,post.tests.36l,"Post-test: P(dz+|test-,sx,ad)")
 ```
-With serial testing, you update your value on the x axis to reflect your previous post test probability
-eg if your posterior after one test is 0.2, that becomes your prior for the second test
-hence serial testing is much better than one test
+
+
 
 References
 
