@@ -25,17 +25,13 @@ The event “sustained exposure” is essentially one of those "other variables.
 based on Prince-Guerra 2021, define sx=symptoms, ad = adult, and dz=disease.   Further, define exposure=sustained exposure. We can just compare the two quantities,
 
 $$
-
 P(dz+|sx,ad)
-
 $$
 
 and
 
 $$
-
 P(dz+|sx,ad,exposure),
-
 $$
 
 and we know that the second must be greater than the first.
@@ -43,38 +39,62 @@ and we know that the second must be greater than the first.
 We can also somewhat more circuitously write
 
 $$
-\begin{align*}
-&P(dz+|test-,sx,ad,exposure + )\\&=\frac{P(exposure+|test-,dz+,sx,ad)}{P(exposure+|test-,sx,ad)}P(dz+|sx,ad,test-)
-\end{align*}
+P(dz+|test-,sx,ad,exposure + )=\frac{P(exposure+|test-,dz+,sx,ad)}{P(exposure+|test-,sx,ad)}P(dz+|sx,ad,test-)
 $$
 
 We see that if
 
 $$
-
 \frac{P(exposure+|test-,dz+,sx,ad)}{P(exposure+|test-,sx,ad)}>1,
-
 $$
 
 which is the case when the event “exposure” increases the probability of the disease (I assume this is true), then
 
 $$
-
 P(dz+|sx,ad,test-),
-
 $$
 
 which we can obtain from Prince-Guerra 2021, is a lower bound on
 
 $$
-
 P(dz+|exposure+,sx,ad,test-).
-
 $$
 
 So, even though the estimates in Prince-Guerra do not apply to our situation directly, we can use them to obtain a lower bound on our post-test probability. It is still not clear whether this is even the true lower bound. When there are multiple factors that we are conditioning on, and when some of these factors have an unknown relationship with the disease status, then we can no longer even make definitive statements about the bound. However, if we were to assume that other variables, besides those concerning age cutoff, symptom status, test result, and exposure, are negligible, our post-test probability estimate can still be considered a lower bound, which still gives us some information, and also shows us, even with our strong assumptions, how little we actually know (I am reposting it here from above, but note now that I call the line a lower bound - also, I re-added the grid lines, which were lost before).
 
-![post.test|480x480](upload://hJwp7tqSw8iyCGnyow7aImKCRHb.png)
+
+From Prince-Guerra et al (2021) [2], we have point estimates and 95% confidence intervals for
+
+$$
+P(test+|dz+,sx+,ad+) \approx 0.64 \ (0.57,0.71)
+$$
+
+and
+
+$$
+P(test+|dz+,sx-,ad+) \approx 0.36 \ (0.27,0.45).
+$$
+
+Also (todo: maybe I should have left this to two decimals),
+
+$$
+P(dz-|test-,sx-,ad+)\approx 1 (1,1)
+$$
+
+and
+
+$$
+P(dz-|test-,sx+,ad+)\approx 1 (1,1).
+$$
+
+Now,
+
+$$
+\begin{aligned}
+P(dz+|test-,sx)&=\frac{P(test-|dz+,sx)}{P(test-|sx)}P(dz+|sx)\\
+&=\frac{1-P(test+|dz+,sx)}{P(test-|dz-,sx)P(dz-|sx)+P(test-|dz+,sx)P(dz+|sx)}P(dz+|sx).
+\end{aligned}
+$$
 
 I am concerned with the omission of gender, which appears to be possibly correlated with viral load (Mahallawi 2021). I think age should be treated as a continuous variable. It seems that age should correlate with viral load; this was not supported by Mahallawi, but it might be supported by Sjoerd, 2021. We need to condition on anything that leads to different antigen levels in different people. If the antigens are excreted or metabolized, we would need to take into account liver and kidney status. Of course, this should depend on immune system function, which will vary along with comorbidities and medications. Antigen level also probably depends on the covid strain. I am also unsure how one should estimate $P(dz+|sx,ad).$ We can get this for the Prince-Guerra 2021 cohort, but this depends on things like location, time of year, and lockdown status. Some of these have changed a lot since the study was conducted.
 
@@ -85,9 +105,7 @@ Note that age is given to us as "adult" - a large loss of info, symptom status i
 Note that to obtain the graph above, we are working with what we have available. However, the following would be ideal: every time one takes a test, one goes to a website and enters information such as age, sex, zip code, and test result. The website then calculates post-test probability based on a model for, explicitily,
 
 $$
-
 P(dz+|test=r,age=a,sex=s,symptoms=sx,zip=z,..)
-
 $$
 
 The model would be updated in real-time based on geographically and temporally relevant statistics. Note that this post-test probability would depend very much on time, and therefore the model would have to be updated probably each day. It seems though that, barring sampling issues, we have this data. There is observational data collected when people report their test results (in other words, we collect information such as age, zip code, etc). Often, also, we have a PCR confirmation. It is unclear however whether we will have enough of the variables mentioned above, which are still necessary.
@@ -108,113 +126,6 @@ Generally, though, it is also advised to take the two tests e.g. 24 hours apart 
 
 Note that I am focusing only on the negative test case, although you could do the same for positive tests (I said originally that this was a non-issue, but I should not have — you can, of course, have a positive test with no disease, and I should repeat the analysis above for that case).
 
-# More detail on the plot above:
-
-From Prince-Guerra et al (2021) [2], we have point estimates and 95% confidence intervals for
-
-$$
-
-P(test+|dz+,sx+,ad+) \approx 0.64 \ (0.57,0.71)
-
-$$
-
-and
-
-$$
-
-P(test+|dz+,sx-,ad+) \approx 0.36 \ (0.27,0.45).
-
-$$
-
-Also (todo: maybe I should have left this to two decimals),
-
-$$
-
-P(dz-|test-,sx-,ad+)\approx 1 (1,1)
-
-$$
-
-and
-
-$$
-
-P(dz-|test-,sx+,ad+)\approx 1 (1,1).
-
-$$
-
-Now,
-
-$$
-
-\begin{align*}
-
-&P(dz+|test-,sx)\\&=\frac{P(test-|dz+,sx)}{P(test-|sx)}P(dz+|sx)\\
-
-&=\frac{1-P(test+|dz+,sx)}{P(test-|dz-,sx)P(dz-|sx)+P(test-|dz+,sx)P(dz+|sx)}P(dz+|sx).
-
-\end{align*}
-
-$$
-
-We can program this
-
-```
-
-like.rat=function(sens,spec,pretest){(1-sens)/((1-sens)*pretest+(spec)*(1-pretest))}
-
-pretest=0.2
-
-```
-
-The posterior probability of having the disease given a negative test result is (likelihood ratio) * prior.
-
-```
-
-post.test.prob = function(sens,spec,pretest){
-
-like.rat(sens=sens,spec=spec,pretest=pretest)*pretest
-
-}
-
-```
-
-We can plot the post test probability over a range of pre-test probabilities, since this will differ for each person / place/ time.
-
-```
-
-pre.tests = seq(0,1,0.01)
-
-get.post.tests = function(sens,spec,pretests){
-
-post.tests = c()
-
-for(i in 1:length(pre.tests)){
-
-post.tests[i]=post.test.prob(sens=sens,spec=spec,pretest=pre.tests[i])
-
-}
-
-post.tests
-
-}
-
-```
-
-Code: [github](https://github.com/samuelweisenthal/BinaxNOWpostTestProb)
-
-References:
-
-Moons, Karel GM, and Frank E. Harrell. “Sensitivity and specificity should be de-emphasized in diagnostic accuracy studies.” Academic radiology 10.6 (2003): 670-672. [http://hbiostat.org/papers/feh/moons.radiology.pdf ](http://hbiostat.org/papers/feh/moons.radiology.pdf)
-
-Prince-Guerra JL, Almendares O, Nolen LD, Gunn JKL, Dale AP, Buono SA, Deutsch-Feldman M, Suppiah S, Hao L, Zeng Y, Stevens VA, Knipe K, Pompey J, Atherstone C, Bui DP, Powell T, Tamin A, Harcourt JL, Shewmaker PL, Medrzycki M, Wong P, Jain S, Tejada-Strop A, Rogers S, Emery B, Wang H, Petway M, Bohannon C, Folster JM, MacNeil A, Salerno R, Kuhnert-Tallman W, Tate JE, Thornburg NJ, Kirking HL, Sheiban K, Kudrna J, Cullen T, Komatsu KK, Villanueva JM, Rose DA, Neatherlin JC, Anderson M, Rota PA, Honein MA, Bower WA. Evaluation of Abbott BinaxNOW Rapid Antigen Test for SARS-CoV-2 Infection at Two Community-Based Testing Sites - Pima County, Arizona, November 3-17, 2020. MMWR Morb Mortal Wkly Rep. 2021 Jan 22;70(3):100-105. doi: 10.15585/mmwr.mm7003e3. Erratum in: MMWR Morb Mortal Wkly Rep. 2021 Jan 29;70(4):144. PMID: 33476316; PMCID: PMC7821766. https://www.cdc.gov/mmwr/volumes/70/wr/pdfs/mm7003e3-H.pdf
-
-Mahallawi WH, Alsamiri AD, Dabbour AF, Alsaeedi H, Al-Zalabani AH. Association of Viral Load in SARS-CoV-2 Patients With Age and Gender. *Front Med (Lausanne)*. 2021;8:608215. Published 2021 Jan 27. doi:10.3389/fmed.2021.608215
-
-Sjoerd Euser, Sem Aronson, Irene Manders, Steven van Lelyveld, Bjorn Herpers, Jan Sinnige, Jayant Kalpoe, Claudia van Gemeren, Dominic Snijders, Ruud Jansen, Sophie Schuurmans Stekhoven, Marlies van Houten, Ivar Lede, James Cohen Stuart, Fred Slijkerman Megelink, Erik Kapteijns, Jeroen den Boer, Elisabeth Sanders, Alex Wagemakers, Dennis Souverein, SARS-CoV-2 viral-load distribution reveals that viral loads increase with age: a retrospective cross-sectional cohort study, *International Journal of Epidemiology*, 2021;, dyab145, https://doi.org/10.1093/ije/dyab145
-
-I appreciate conversations with the datamethods forum participants (Diana Petitti, James Meyer. ), Anna Park, and my brother on this topic.
-
-However we must work with these quantities here. Hence
 
 Likelihood ratio
 ```{r }
@@ -244,13 +155,15 @@ post.tests
 ```
 
 compute using, from Prince-Guerra 2021, 
-\[
+$$
  P(test+|dz+,sx+,ad+)\approx 0.64 (0.57,0.71)")
- \]
- and 
- \[
+$$
+ and
+ 
+$$
 P(test+|dz+,sz-,ad+) \approx 0.36 (0.27,0.45)")
-\]
+$$
+
 ```{r }
 
 plot.p = function(post.tests.6,post.tests.6l,post.tests.6u,
@@ -297,11 +210,16 @@ plot.p(post.tests.6,post.tests.6l,post.tests.6u,
 
 
 
-References
+Code: [github](https://github.com/samuelweisenthal/BinaxNOWpostTestProb)
 
-[1] Prince-Guerra JL, Almendares O, Nolen LD, Gunn JKL, Dale AP, Buono SA, Deutsch-Feldman M, Suppiah S, Hao L, Zeng Y, Stevens VA, Knipe K, Pompey J, Atherstone C, Bui DP, Powell T, Tamin A, Harcourt JL, Shewmaker PL, Medrzycki M, Wong P, Jain S, Tejada-Strop A, Rogers S, Emery B, Wang H, Petway M, Bohannon C, Folster JM, MacNeil A, Salerno R, Kuhnert-Tallman W, Tate JE, Thornburg NJ, Kirking HL, Sheiban K, Kudrna J, Cullen T, Komatsu KK, Villanueva JM, Rose DA, Neatherlin JC, Anderson M, Rota PA, Honein MA, Bower WA. Evaluation of Abbott BinaxNOW Rapid Antigen Test for SARS-CoV-2 Infection at Two Community-Based Testing Sites - Pima County, Arizona, November 3-17, 2020. MMWR Morb Mortal Wkly Rep. 2021 Jan 22;70(3):100-105. doi: 10.15585/mmwr.mm7003e3. Erratum in: MMWR Morb Mortal Wkly Rep. 2021 Jan 29;70(4):144. PMID: 33476316; PMCID: PMC7821766.
+References:
 
-<!--
-[2] Pollock NR, Jacobs JR, Tran K, Cranston AE, Smith S, O'Kane CY, Roady TJ, Moran A, Scarry A, Carroll M, Volinsky L, Perez G, Patel P, Gabriel S, Lennon NJ, Madoff LC, Brown C, Smole SC. Performance and Implementation Evaluation of the Abbott BinaxNOW Rapid Antigen Test in a High-Throughput Drive-Through Community Testing Site in Massachusetts. J Clin Microbiol. 2021 Apr 20;59(5):e00083-21. doi: 10.1128/JCM.00083-21. PMID: 33622768; PMCID: PMC8091851.
--->
+Moons, Karel GM, and Frank E. Harrell. “Sensitivity and specificity should be de-emphasized in diagnostic accuracy studies.” Academic radiology 10.6 (2003): 670-672. [http://hbiostat.org/papers/feh/moons.radiology.pdf ](http://hbiostat.org/papers/feh/moons.radiology.pdf)
 
+Prince-Guerra JL, Almendares O, Nolen LD, Gunn JKL, Dale AP, Buono SA, Deutsch-Feldman M, Suppiah S, Hao L, Zeng Y, Stevens VA, Knipe K, Pompey J, Atherstone C, Bui DP, Powell T, Tamin A, Harcourt JL, Shewmaker PL, Medrzycki M, Wong P, Jain S, Tejada-Strop A, Rogers S, Emery B, Wang H, Petway M, Bohannon C, Folster JM, MacNeil A, Salerno R, Kuhnert-Tallman W, Tate JE, Thornburg NJ, Kirking HL, Sheiban K, Kudrna J, Cullen T, Komatsu KK, Villanueva JM, Rose DA, Neatherlin JC, Anderson M, Rota PA, Honein MA, Bower WA. Evaluation of Abbott BinaxNOW Rapid Antigen Test for SARS-CoV-2 Infection at Two Community-Based Testing Sites - Pima County, Arizona, November 3-17, 2020. MMWR Morb Mortal Wkly Rep. 2021 Jan 22;70(3):100-105. doi: 10.15585/mmwr.mm7003e3. Erratum in: MMWR Morb Mortal Wkly Rep. 2021 Jan 29;70(4):144. PMID: 33476316; PMCID: PMC7821766. https://www.cdc.gov/mmwr/volumes/70/wr/pdfs/mm7003e3-H.pdf
+
+Mahallawi WH, Alsamiri AD, Dabbour AF, Alsaeedi H, Al-Zalabani AH. Association of Viral Load in SARS-CoV-2 Patients With Age and Gender. *Front Med (Lausanne)*. 2021;8:608215. Published 2021 Jan 27. doi:10.3389/fmed.2021.608215
+
+Sjoerd Euser, Sem Aronson, Irene Manders, Steven van Lelyveld, Bjorn Herpers, Jan Sinnige, Jayant Kalpoe, Claudia van Gemeren, Dominic Snijders, Ruud Jansen, Sophie Schuurmans Stekhoven, Marlies van Houten, Ivar Lede, James Cohen Stuart, Fred Slijkerman Megelink, Erik Kapteijns, Jeroen den Boer, Elisabeth Sanders, Alex Wagemakers, Dennis Souverein, SARS-CoV-2 viral-load distribution reveals that viral loads increase with age: a retrospective cross-sectional cohort study, *International Journal of Epidemiology*, 2021;, dyab145, https://doi.org/10.1093/ije/dyab145
+
+I appreciate conversations with the datamethods forum participants (Diana Petitti, James Meyer. ), Anna Park, and my brother on this topic.
