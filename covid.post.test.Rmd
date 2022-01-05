@@ -169,7 +169,11 @@ $$
 plot.p = function(post.tests.6,post.tests.6l,post.tests.6u,
                   post.tests.36,post.tests.36u,post.tests.36l,post.label){
 lwd.point = 2
-plot(pre.tests,post.tests.6,type='l',xlab="Pre-test: P(dz+|sx,ad)",ylab=post.label,lty=1,lwd=lwd.point,main='Lower bound of post-test prob given exp, neg BinaxNOW test\n (sx=symptoms, ad=adult)')
+plot(pre.tests,post.tests.6,type='l',
+     xlab="Pre-test: P(dz+|sx,ad)",ylab=post.label,
+     lty=1,lwd=lwd.point,
+     main=('Lower bound of post-test prob given exp, 
+           neg BinaxNOW test\n (sx=symptoms, ad=adult)'))
 lines(pre.tests,post.tests.6u,lty=2,col=1)
 lines(pre.tests,post.tests.6l,lty=2,col=1)
 xseq = seq(0,1,0.1)
@@ -202,10 +206,12 @@ post.tests.36l = get.post.tests(sens=.27, spec=1,pretests)
 
 png("post.test.png")
 plot.p(post.tests.6,post.tests.6l,post.tests.6u,
-                  post.tests.36,post.tests.36u,post.tests.36l,"Lower Bound Post-test: P(dz+|test-,sx,ad)")
+                  post.tests.36,post.tests.36u,post.tests.36l,
+       "Lower Bound Post-test: P(dz+|test-,sx,ad)")
 dev.off()
 plot.p(post.tests.6,post.tests.6l,post.tests.6u,
-                  post.tests.36,post.tests.36u,post.tests.36l,"Lower Bound Post-test: P(dz+|test-,sx,ad)")
+                  post.tests.36,post.tests.36u,post.tests.36l,
+       "Lower Bound Post-test: P(dz+|test-,sx,ad)")
 ```
 
 
