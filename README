@@ -1,1 +1,3 @@
-Rmarkdown file for post test calculations
+Computes the post test probability of covid given a negative test, 
+under various assumptions detailed at 
+https://discourse.datamethods.org/t/determining-post-test-probability-of-covid-19/4723/12
