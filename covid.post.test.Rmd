@@ -249,7 +249,7 @@ Generally, though, it is also advised to take the two tests e.g. 24 hours apart 
 Note that I am focusing only on the negative test case, although you could do the same for positive tests (I said originally that this was a non-issue, but I should not have — you can, of course, have a positive test with no disease, and I should repeat the analysis above for that case).
 
 
-Code: [github](https://github.com/samuelweisenthal/BinaxNOWpostTestProb)
+Code: \url{https://github.com/samuelweisenthal/BinaxNOWpostTestProb}
 
 
 I appreciate conversations with the datamethods forum participants, Anna Park, and my brother on this topic.
