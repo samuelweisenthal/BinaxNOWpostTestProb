@@ -1,5 +1,5 @@
 ---
-title: "Post test probability of disease in sympomatic and asymptomatic adult after negative BinaxNOW rapid antigen coronavirus test under varying pre-test probabilities "
+title: "On the post-test probability of covid-19"
 output:
   pdf_document: default
   html_document: default
