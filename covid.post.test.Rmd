@@ -1,5 +1,5 @@
 ---
-title: "On the post-test probability of covid-19"
+title: "On determining the post-test probability of covid-19"
 output:
   pdf_document: default
   html_document: default
@@ -43,13 +43,13 @@ p(dz+|test-,sx)&=\frac{p(test-|dz+,sx)}{p(test-|sx)}p(dz+|sx)\\
 \end{aligned}
 $$
 
-## Study design
+## Study design:
 
 Originally, I jumped to looking for the pieces of the equation above. We might look to a study for this purpose, but the validity of the estimates depends on the study design.  Accoring to [@CM], a retrospective case-control is most appropriate.  I am assuming in this case that we let the disease status be the outcome.  I however need to think about this more; perhaps if [@prince2021evaluation] does not fit this design, there may be issues with the approach I take below.  Why do we want a retrospective observational instead of prospective or controlled study?  Maybe the latter is obvious, and I am missing something.  Below, I talk a bit about what would be "ideal," and my idea was just to record information on people as they test. I think this amounts to a retrospective case-control.
 
 Note that, just focusing on $P(dz+|test,sx),$  we are really interested in the test effect. Let us therefore consider how this would be estimated in general.  First, if the data is observational and there is an unmeasured variable that affects whether someone takes a test and also whether they have the disease (confounding), the effect estimate may be incorrect. Generally, we would condition on the confounder to remove this issue. I am trying to think more about how this relates to the discussion below on conditioning on the necessary set of variables. I think it is different, since we can defend a marginal (non-conditioned) post-test probability, if it is tailored enough to us to inform decision-making, but we can't really defend an unadjusted estimate of, e.g., a treatment effect.  Both estimates however are similarly biased. 
 
-## Estimates from [@prince2021evaluation]
+## Estimates from [@prince2021evaluation]:
 
 Assuming that the study design of [@prince2021evaluation] allows for valid estimation, we can use their point estimates and 95% confidence intervals for
 
@@ -73,7 +73,7 @@ $$
 
 We can then plug these into the equation above, and obtain a post-test probability, right? 
 
-## Issues with the standard calculation
+## Issues with the standard calculation:
 
 Not so fast. If we define $x=(sx,ad),$ we see that it is a somewhat limited set.  For example, we were originally interested in the post-test probability given a sustained exposure.  Note,
 $$
@@ -122,15 +122,15 @@ $$
 
 So, even though the estimates in [@prince2021evaluation] do not apply to our situation directly, we can use them to obtain a lower bound on our post-test probability. It is still not clear whether this is even the true lower bound. When there are multiple factors that we are conditioning on, and when some of these factors have an unknown relationship with the disease status, then we can no longer even make definitive statements about the bound. However, if we were to assume that other variables, besides those concerning age cutoff, symptom status, test result, and exposure, are negligible, our post-test probability estimate can still be considered a lower bound, which still gives us some information, and also shows us, even with our strong assumptions, how little we actually know (I am reposting it here from above, but note now that I call the line a lower bound - also, I re-added the grid lines, which were lost before).
 
-## Other variables that might be relevant
+## Other variables that might be relevant:
 
 I am concerned with the omission of gender, which appears to be possibly correlated with viral load [@mahallawi2021association], assuming viral load and antigen presence are essentially the same. I think age should be treated as a continuous variable. It seems that age should correlate with viral load; this was not supported by Mahallawi, but it might be supported by [@euser2021sars]. We need to condition on anything that leads to different antigen levels in different people. If the antigens are excreted or metabolized, we would need to take into account liver and kidney status. Of course, this should depend on immune system function, which will vary along with comorbidities and medications. Antigen level also probably depends on the covid strain. I am also unsure how one should estimate $p(dz+|sx,ad).$ We can get this for the [@prince2021evaluation] cohort, but this depends on things like location, time of year, and lockdown status. Some of these have changed a lot since the study was conducted.  
 
-## Weakening the assumption of negligibility
+## Weakening the assumption of negligibility:
 
 Perhaps the assumption that other variables in $u$ are "negligible" is too strong.  If we write $u=u^i\cup u^d,$ where $u^i$ is the set of variables that increases post-test probability and $u^d$ is the set of variables that decreases post-test probability, then we might be able to get away with the assumption that the two sets sort of "cancel" eachother out.  So, of the variables that we did not measure, some things will increase the likelihood of disease and others vice versa, but their total effect will be near enough to zero.
 
-## Implementation, assuming negligibility and proper estimates, under varying pre-test probabilities
+## Implementation, assuming negligibility and proper estimates, under varying pre-test probabilities:
 
 Likelihood ratio
 ```{r }
