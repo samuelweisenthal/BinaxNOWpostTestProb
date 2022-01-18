@@ -13,7 +13,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 # Summary:
 
-Covid-19 tests are crucial. Interpreting tests, however, is not necessarily a simple application of Bayes rule.  A test that does not provide a means of interpretation (e.g., a website where the user can enter their result and information and receive a post-test probability of disease) is sort of like a car without a windshield (maybe this analogy is too extreme, but it has some truth).
+Covid-19 tests are crucial. Interpreting tests, however, is not necessarily a simple application of Bayes rule.  A test that does not provide a means of interpretation (e.g., a website where the user can enter their result and information and receive a post-test probability of disease) might be hazardous to the user (and people around the user).  Here, I will try to provide an interpretation of a negative test, discuss some of the difficulties, and propose a possible solution.
 
 In more detail:
 
@@ -258,6 +258,8 @@ I mentioned viral load above.  This was mentioned in a blog post \url{https://ww
 # Positive tests:
 
 Note that I am focusing only on the negative test case, although you could do the same for positive tests (I said originally that this was a non-issue, but I should not have — you can, of course, have a positive test with no disease, and I should repeat the analysis above for that case).
+
+## Code
 
 
 Code: \url{https://github.com/samuelweisenthal/BinaxNOWpostTestProb}
