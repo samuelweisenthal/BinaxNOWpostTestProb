@@ -42,13 +42,11 @@ Define sx=symptoms, ad = adult, and dz=disease (covid-19). I am including sympto
 Note:
 
 $$
-
 \begin{aligned}
 p(dz+|test-,sx)&=\frac{p(test-|dz+,sx)}{p(test-|sx)}p(dz+|sx)\\
 &=\frac{1-p(test+|dz+,sx)}{p(test-|dz-,sx)p(dz-|sx)+p(test-|dz+,sx)p(dz+|sx)}p(dz+|sx)\\
 &=\frac{1-sens}{spec(1-pretest)+(1-sens)pretest}pretest
 \end{aligned}
-
 $$
 
 So, we have an equation that seems to allow us to find the post-test probability given commonly estimated test operating characteristics.  Originally, I jumped to looking for studies to help me fill in the pieces of the second to last line of the display above [Note that in the last line, I rename things.  This renaming, interestingly, can cause some difficulty in interpretation; we understand the terms in the second to last line, but the renaming in the last line renames and strips the terms of their probabilistic meaning (along with removing information about what is being conditioned upon), which can lead to misuse].  It is worth noting however that test interpretation would be much better if there were databases kept such that we could just estimate $p(dz+|test-,sx, \text{ other variables})$ directly rather than having to use this equation.  This is completely possible, and would be much better and easier for the user of the test (I discuss this more below in what I call the "ideal" scenario).  This type  of modeling does not occur usually because each model would be specific to time and location, at least.  This sounds like a daunting task, therefore, to fit all of these models, but the reality is that if this is not done that way, it has to be done another way --- it just shifts the responsibility of interpretation from the test manufacturer or some independent organization onto the person using the test.  So, we have no choice - let's try to do this.
@@ -371,7 +369,7 @@ We can compare $p(dz+|test-,sx,adult)$ from [@prince2021evaluation] with $p(dz|t
 ```{r }
 
 pts=get.t.posts(tests)
-pts$BinaxNOW
+#pts$BinaxNOW
 lns = list(l.6,l.36,pts$BinaxNOW)
 
 
