@@ -13,7 +13,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 # Summary:
 
-Covid-19 tests are crucial. Interpreting tests, however, is not necessarily a simple application of Bayes rule.  A test that does not provide a means of interpretation (e.g., a website where the user can enter their result and information and receive a post-test probability of disease) might be hazardous to the user (and people around the user).  Here, I will try to provide an interpretation of a negative test, discuss some of the difficulties, and propose a more systematic solution.
+Covid-19 tests are crucial. Interpreting tests, however, is not necessarily just an application of Bayes rule.  A test that does not provide a means of interpretation (e.g., a website where the user can enter their result and information and receive a post-test probability of disease) might be hazardous to the user (and people around the user).  Here, I will try to provide an interpretation of a negative test, discuss some of the difficulties, and mention a more systematic solution, which has been discussed previously in the literature.
 
 In more detail:
 
@@ -33,16 +33,19 @@ Some months ago, I wanted to, given what I had available, try to determine the p
 
 We would ignore this extra variable if we were “screening,” or randomly checking whether we have covid-19. In this case, we are not taking the test "because of something that happened,” but just "because." However, “screening” is elusive — e.g., even if one believes that one is “screening,” if one is doing so in order to determine whether it is safe to return home for the holiday, the fact that it is holiday season seems to actually make it so that they are no longer “screening”. In that case, one is testing because it is near the holiday, and the holiday season affects the pre-test probability. Hence, one is rarely "screening," and there is a need to take other variables into account (e.g., see [@moons2003sensitivity] and [@BBR]).
 
-The event “sustained exposure” is essentially one of those "other variables." I have therefore been trying to deal with the fact that we have this other information that is not taken into account in [@prince2021evaluation] (I am not even sure whether they could have taken it into account).
+The event “sustained exposure” is essentially one of those "other variables." It appears actually that [@prince2021evaluation] did have this data available, but the raw data is not provided. The sample size is fairly large in this study, but there appear to be only 4 false positives.
 
 # The standard approach:
 
-Define sx=symptoms, ad = adult, and dz=disease (covid-19). Note:
+Define sx=symptoms, ad = adult, and dz=disease (covid-19). I am including symptom status and "adult" as done in [@prince2021evaluation], but this is more for the sake of illustration than to give an accurate estimate.  I will include some charts from a more recent meta-analysis below.
+
+Note:
 
 $$
 \begin{aligned}
 p(dz+|test-,sx)&=\frac{p(test-|dz+,sx)}{p(test-|sx)}p(dz+|sx)\\
-&=\frac{1-p(test+|dz+,sx)}{p(test-|dz-,sx)p(dz-|sx)+p(test-|dz+,sx)p(dz+|sx)}p(dz+|sx).
+&=\frac{1-p(test+|dz+,sx)}{p(test-|dz-,sx)p(dz-|sx)+p(test-|dz+,sx)p(dz+|sx)}p(dz+|sx)\\
+&=\frac{1-sens}{spec(1-pretest)+(1-sens)pretest}pretest
 \end{aligned}
 $$
 
@@ -69,7 +72,7 @@ $$
 Also (todo: maybe I should have left this to two decimals),
 
 $$
-p(dz-|test-,sx-,ad+)\approx 1 (1,1)
+p(dz-|test-,sx-,ad+)\approx 1 (.99,1)
 $$
 and
 $$
@@ -128,7 +131,11 @@ So, even though the estimates in [@prince2021evaluation] do not apply to our sit
 
 ## Other variables that might be relevant:
 
-As I said above, we can only know how good or bad our current estimates are by collecting more data.  However, one can also use previous studies to detect variables that might be relevant, but are ignored.  I am concerned with the omission of gender, which appears to be possibly correlated with viral load [@mahallawi2021association], assuming viral load and antigen presence are essentially the same. I think age should be treated as a continuous variable. It seems that age should correlate with viral load; this was not supported by Mahallawi, but it might be supported by [@euser2021sars]. We need to condition on anything that leads to different antigen levels in different people. If the antigens are excreted or metabolized, we would need to take into account liver and kidney status. Of course, this should depend on immune system function, which will vary along with comorbidities and medications. Antigen level also probably depends on the covid strain. I am also unsure how one should estimate $p(dz+|sx,ad).$ We can get this for the [@prince2021evaluation] cohort, but this depends on things like location, time of year, and lockdown status. Some of these have changed a lot since the study was conducted.  One can avoid having to think about the latter if things are done with updating, location-specific databases, as mentioned above.  It really should not be the responsibility of the test taker to think about the latter, especially because it depends on the covariates chosen in the study, and it is unreasonable to expect that someone can guess, without data, the value of their conditional pre-test probability.
+As I said above, we can only know how good or bad our current estimates are by collecting more data.  However, one can also use previous studies to detect variables that might be relevant, but are ignored.  I am concerned with the omission of gender, which appears to be possibly correlated with viral load [@mahallawi2021association], assuming viral load and antigen presence are essentially the same. I think age should be treated as a continuous variable. It seems that age should correlate with viral load; this was not supported by Mahallawi, but it might be supported by [@euser2021sars]. We need to condition on anything that leads to different antigen levels in different people. If the antigens are excreted or metabolized, we would need to take into account liver and kidney status. Of course, this should depend on immune system function, which will vary along with comorbidities and medications. Antigen level also probably depends on the covid strain.  It appears that Table 2 in  [@prince2021evaluation] provides some interesting information that can help us here (there are counts of eg false positive and negative rates conditioned on sex, ethnicity, etc; unfortunately not jointly - I will have to look for the raw data). I am just eyeballing it, and it appears that the percentage of FN differs by sex, ethnicity, race, age, symptoms, days from symptom onset, and known exposure (!!).  
+
+
+
+I am also unsure how one should estimate $p(dz+|sx,ad).$ We can get this for the [@prince2021evaluation] cohort, but this depends on things like location, time of year, and lockdown status. Some of these have changed a lot since the study was conducted.  One can avoid having to think about the latter if things are done with updating, location-specific databases, as mentioned above.  It really should not be the responsibility of the test taker to think about the latter, especially because it depends on the covariates chosen in the study, and it is unreasonable to expect that someone can guess, without data, the value of their conditional pre-test probability.
 
 ## Weakening the assumption of negligibility:
 
@@ -138,12 +145,21 @@ I said before that possibly if the variables we do not condition on have equally
 
 Here, I am going to calculate the post-test probability given a negative test for the BINAX Now rapid antigen test under the assumption that the variables not conditioned upon in the [@prince2021evaluation] are  negligible, either in effect or in total effect, and that the study had a reasonable design.
 
-We start with the likelihood ratio:
+We start with the likelihood ratio; recall from above that
+
+$$
+\begin{aligned}
+p(dz+|test-,sx)=\frac{1-sens}{spec(1-pretest)+(1-sens)pretest}pretest
+\end{aligned}
+$$
+
+Note that this implies that higher sensitivity will increase post-test probability of the disease being present and higher specificity will decrease post-test probability.  Hence, our lower bound will be the upper confidence bound of sensitivity and the lower confidence bound of specificity and vice versa for the upper bound.
+
 ```{r }
 like.rat=function(sens,spec,pretest){(1-sens)/((1-sens)*pretest+(spec)*(1-pretest))}
 ```
 
-We then get that the posterior probability of disease given negative test is likelihood ratio * pretest probability.
+We then get that the posterior probability of disease given negative test is likelihood ratio times the pretest probability.
 
 ```{r }
 post.test.prob = function(sens,spec,pretest){
@@ -151,11 +167,11 @@ post.test.prob = function(sens,spec,pretest){
 }
 ```
 
-Let us compute the post-test probability over a grid of pretests.
+Let us compute the post-test probability over a grid of pre.tests.
 
 ```{r }
 pre.tests = seq(0,1,0.01)
-get.post.tests = function(sens,spec,pretests){
+get.post.tests = function(sens,spec,pre.tests){
 post.tests = c()
 for(i in 1:length(pre.tests)){
   post.tests[i]=post.test.prob(sens=sens,spec=spec,pretest=pre.tests[i])
@@ -177,16 +193,14 @@ Now just plot
 
 ```{r }
 
-plot.p = function(post.tests.6,post.tests.6l,post.tests.6u,
-                  post.tests.36,post.tests.36u,post.tests.36l,post.label){
+plot.p = function(lns,post.label,xlab,
+                  leg.labels,main){
+
 lwd.point = 2
-plot(pre.tests,post.tests.6,type='l',
-     xlab="Pre-test: p(dz+|sx,ad)",ylab=post.label,
-     lty=1,lwd=lwd.point,
-     main=('Lower bound of post-test prob given exp, 
-           neg BinaxNOW test\n (sx=symptoms, ad=adult)'))
-lines(pre.tests,post.tests.6u,lty=2,col=1)
-lines(pre.tests,post.tests.6l,lty=2,col=1)
+plot(c(0,0),pch=0,xlim=c(0,1),ylim=c(0,1),
+     xlab=xlab,ylab=post.label,
+     lty=1,lwd=lwd.point,main=main,col='white')
+
 xseq = seq(0,1,0.1)
 yseq = seq(0,1,0.1)
 for(x in xseq){
@@ -196,33 +210,158 @@ for(x in xseq){
 for(y in yseq){
   abline(h=y,col='gray')
 }
+colorBlindBlack8  <- c("#000000", "#E69F00", "#56B4E9", "#009E73", 
+                       "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
+nl = length(lns)
+for (i in 1:nl){
+lines(pre.tests,lns[[i]]$m,lty=1,lwd=lwd.point,col=colorBlindBlack8[i])
+lines(pre.tests,lns[[i]]$u,lty=2,col=colorBlindBlack8[i])
+lines(pre.tests,lns[[i]]$l,lty=2,col=colorBlindBlack8[i])  
+}
 
-lines(pre.tests,post.tests.36,lty=1,lwd=lwd.point,col=2)
-lines(pre.tests,post.tests.36u,lty=2,col=2)
-lines(pre.tests,post.tests.36l,lty=2,col=2)
-legend("topleft",
-       c(TeX("sx+,ad+"),TeX("sx-,ad+")),
-       lty=c(1,1),col=c(1,2),lwd=c(lwd.point,lwd.point))
+
+legend("topleft",legend=leg.labels,bg='white',
+       lty=rep(1,nl),col=colorBlindBlack8[c(1:nl)],lwd=c(lwd.point,lwd.point))
 }
 ```
 
+
 ```{r }
-post.tests.6=get.post.tests(sens=0.64,spec=1,pretests)
-post.tests.6l=get.post.tests(sens=0.57,spec=1,pretests)
-post.tests.6u=get.post.tests(sens=0.71,spec=1,pretests)
+post.tests.6=get.post.tests(sens=0.64,spec=1,pre.tests)
+post.tests.6l=get.post.tests(sens=0.57,spec=1,pre.tests)
+post.tests.6u=get.post.tests(sens=0.71,spec=1,pre.tests)
 
-post.tests.36=get.post.tests(sens=0.36,spec=1,pretests)
-post.tests.36u = get.post.tests(sens=.45,spec=1,pretests)
-post.tests.36l = get.post.tests(sens=.27, spec=1,pretests)
+l.6 = list(m=post.tests.6,l=post.tests.6l,u=post.tests.6u)
 
-png("post.test.png")
-plot.p(post.tests.6,post.tests.6l,post.tests.6u,
-                  post.tests.36,post.tests.36u,post.tests.36l,
-       "Lower Bound Post-test: p(dz+|test-,sx,ad)")
-dev.off()
-plot.p(post.tests.6,post.tests.6l,post.tests.6u,
-                  post.tests.36,post.tests.36u,post.tests.36l,
-       "Lower Bound Post-test: p(dz+|test-,sx,ad)")
+post.tests.36=get.post.tests(sens=0.36,spec=1,pre.tests)
+post.tests.36u = get.post.tests(sens=.45,spec=.99,pre.tests)
+#post.tests.36l = get.post.tests(sens=.27, spec=1,pre.tests)
+post.tests.36l = get.post.tests(sens=.27, spec=1,pre.tests)
+
+l.36 = list(m=post.tests.36,l=post.tests.36l,u=post.tests.36u)
+
+# Prince-Guerra 2021
+
+lns = list(l.6,l.36)
+
+
+plot.p(lns,
+       post.label="Lower Bound Post-test: p(dz+|test-,sx,ad)",xlab="Pre-test: p(dz+|sx,ad)",
+       leg.labels=c(TeX("sx+,adult+"),TeX("sx-,adult+")),main="Prince-Guerra, 2021"
+       )
+
+```
+
+Now consider numebrs from the recent meta-analysis [@bruemmer2021accuracy]. Note that these estimates, as far as I know, condition on nothing except the test result (I do not know how they would otherwise pool so many estimates).  Hence, we have pre-test as 
+$$
+P(dz+)
+$$
+
+and post-test as 
+
+$$
+P(dz+|test-).
+$$
+
+```{r }
+
+tests=list(
+veritor=list(
+  nm='BD Veritor',
+  sens=list(m=.64,l=.49,u=.76),
+  spec=list(m=1,l=.99,u=1)
+),
+Binax=list(
+  nm='BinaxNOW',
+  sens=list(m=.62,l=.48,u=.74),
+  spec=list(m=1,l=1,u=1)
+),
+Clinitest = list(
+  nm='CLINITEST',
+  sens=list(m=.62,l=.47,u=.75),
+  spec=list(m=.99,l=.97,u=.99)
+),
+Coris = list(
+  nm="Coris",
+  sens=list(m=.40,l=.29,u=.52),
+  spec=list(m=.99,l=.95,u=1)
+),
+LumipulseG =  list(
+  nm="Lumipulse G",
+  sens=list(m=.87,l=.78,u=.93),
+  spec=list(m=.97,l=.89,u=.99)
+),
+LumiraDx =  list(
+  nm="LumiraDx",
+  sens=list(m=.88,l=.59,u=.98),
+  spec=list(m=.99,l=.96,u=1)
+),
+Panbio =  list(
+  nm="Panbio",
+  sens=list(m=.72,l=.65,u=.78),
+  spec=list(m=.99,l=.99,u=1)
+),
+Rapigen =  list(
+  nm="Rapigen",
+  sens=list(m=.62,l=.47,u=.75),
+  spec=list(m=.99,l=.94,u=1)
+),
+Sofia =  list(
+  nm="Sofia",
+  sens=list(m=.77,l=.74,u=.80),
+  spec=list(m=.99,l=.98,u=1)
+),
+StandardF =  list(
+  nm="StandardF",
+  sens=list(m=.68,l=.56,u=.79),
+  spec=list(m=.98,l=.97,u=.99)
+),
+StandardQ =  list(
+  nm="StandardQ",
+  sens=list(m=.75,l=.69,u=.80),
+  spec=list(m=.99,l=.98,u=1)
+),
+StandardQnasal =  list(
+  nm="StandardQnasal",
+  sens=list(m=.80,l=.70,u=.87),
+  spec=list(m=.99,l=.98,u=1)
+)
+)
+get.t.posts = function(tests){
+test.posts=list()
+for(t in tests){
+  test.posts[[t$nm]]=list(
+    m=get.post.tests(sens=t$sens$m,spec=t$spec$m,pre.tests),
+    l=get.post.tests(sens=t$sens$l,spec=t$spec$u,pre.tests),
+    u=get.post.tests(sens=t$sens$u,spec=t$spec$l,pre.tests)
+    )
+  
+}
+test.posts
+}
+
+ms=c(seq(1,12,3),12)
+ls = length(ms)
+#par(mfrow=c(2,2))
+for (k in 1:(ls-1)){
+en=ms[k+1]-1
+if(k==4){
+  en=12
+}
+test.posts = get.t.posts(tests[ms[k]:en])
+plot.p(test.posts,
+       post.label="Post-test: p(dz+|test-)",xlab="Pre-test: p(dz+)",
+       leg.labels=names(test.posts),main="Brummer, 2021"
+       )
+}
+
+
+
+
+
+
+
+
 ```
 
 
@@ -244,6 +383,8 @@ Also, ideally, the test result would be a continuous variable (eg, amount of vir
 # On the test cutoff (if there is a cutoff):
 
 It is not clear this is how it works, but, in general, test cutoffs have highly significant implications. If indeed there is a cutoff, what is the reward function that is being optimized? It appears that these tests were designed to minimize false positive results. However, that is not, in general, always a good idea. Decreasing false positives (e.g., by setting a high cutoff) also increases false negatives. In general, for someone who works in a highly populated area, or with vulnerable populations, a false negative is worse than a false positive.  Therefore, it should be a priority not to include a threshold in the test, if possible.
+
+[Add thought experiment about acting without post test]
 
 # Serial testing:
 
