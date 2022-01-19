@@ -351,19 +351,30 @@ if(k==4){
 test.posts = get.t.posts(tests[ms[k]:en])
 plot.p(test.posts,
        post.label="Post-test: p(dz+|test-)",xlab="Pre-test: p(dz+)",
-       leg.labels=names(test.posts),main="Brummer, 2021"
+       leg.labels=names(test.posts),main=""
        )
 }
 
 
+```
+
+We can compare $P(dz+|test-,sx,adult)$ from [@prince2021evaluation] with $P(dz|test-)$ from [@bruemmer2021accuracy] (although really we could just compare the numbers...).
+```{r }
+
+pts=get.t.posts(tests)
+pts$BinaxNOW
+lns = list(l.6,l.36,pts$BinaxNOW)
 
 
-
-
+plot.p(lns,
+       post.label="Lower Bound Post-test: p(dz+|test-,...)",xlab="Pre-test: p(dz+|...)",
+       leg.labels=c(TeX("sx+,adult+ (Prince-Guerra)"),TeX("sx-,adult+ (Prince-Geurra)"),"sx null, adult null, (Brummer)"),main="Prince-Guerra vs Brummer"
+       )
 
 
 ```
 
+It seems that the asymptomatic just override the symptomatic (makes sense, fewer symptomatic.)  It is late as I write this, but actually this is a big deal.  It means that the dominant cohort will override in the marginal estimate.  I think this is common sense, going back to $\alpha$ above, which combines the two conditional distributions.  There is no reason to believe, we see now, that the marginal will be in the middle.  Hence, I guess that it is worse than just that we will be in the middle; if you are asymptomatic, you will get a decent estimate.  If you are symptomatic, you will be pulled toward asymptomatic, and get a poor estimate.
 
 
 # Ideally:
