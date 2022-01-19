@@ -42,18 +42,22 @@ Define sx=symptoms, ad = adult, and dz=disease (covid-19). I am including sympto
 Note:
 
 $$
+
 \begin{aligned}
 p(dz+|test-,sx)&=\frac{p(test-|dz+,sx)}{p(test-|sx)}p(dz+|sx)\\
 &=\frac{1-p(test+|dz+,sx)}{p(test-|dz-,sx)p(dz-|sx)+p(test-|dz+,sx)p(dz+|sx)}p(dz+|sx)\\
 &=\frac{1-sens}{spec(1-pretest)+(1-sens)pretest}pretest
 \end{aligned}
+
 $$
 
-So, we have an equation that seems to allow us to find the post-test probability given commonly estimated test operating characteristics.  Originally, I jumped to looking for studies to help me fill in the pieces of this equation.  It is worth noting however that it would be much better if there were databases kept such that we could just estimate $p(dz+|test-,sx, \text{ other variables})$ directly rather than having to use this equation.  This is completely possible, and would be much better and easier for the user of the test (I discuss this more below in what I call the "ideal" scenario).  The reason this type  of modeling does not occur is that in general each model would be specific to time and location, at least.  This sounds like a daunting task, therefore, to fit all of these models, but the reality is that if this is not done that way, it has to be done another way --- it just puts the responsibility on the person using the test to try to make some sense of the result.  So, we have no choice - let's try to do this.
+So, we have an equation that seems to allow us to find the post-test probability given commonly estimated test operating characteristics.  Originally, I jumped to looking for studies to help me fill in the pieces of the second to last line of the display above [Note that in the last line, I rename things.  This renaming, interestingly, can cause some difficulty in interpretation; we understand the terms in the second to last line, but the renaming in the last line renames and strips the terms of their probabilistic meaning (along with removing information about what is being conditioned upon), which can lead to misuse].  It is worth noting however that test interpretation would be much better if there were databases kept such that we could just estimate $p(dz+|test-,sx, \text{ other variables})$ directly rather than having to use this equation.  This is completely possible, and would be much better and easier for the user of the test (I discuss this more below in what I call the "ideal" scenario).  This type  of modeling does not occur usually because each model would be specific to time and location, at least.  This sounds like a daunting task, therefore, to fit all of these models, but the reality is that if this is not done that way, it has to be done another way --- it just shifts the responsibility of interpretation from the test manufacturer or some independent organization onto the person using the test.  So, we have no choice - let's try to do this.
+
+
 
 ## Study design:
 
-We first need to fill in the pieces of the right hand side of the equation above.  We might look to a study for this purpose, but the validity of the estimates depends on the study design.  Accoring to [@CM], a retrospective case-control is most appropriate.  I am assuming in this case that we let the disease status be the outcome.  I however need to think about this more; perhaps if [@prince2021evaluation] does not fit this design, there may be issues with the approach I take below. Below, when I talk a bit about what would be "ideal,"  my idea is to record information on people as they test. I think this amounts to a retrospective case-control.  Note that, just focusing on $P(dz+|test,sx),$  we are really interested in the test effect. Let us therefore consider how this would be estimated in general.  First, if the data is observational and there is an unmeasured variable that affects whether someone takes a test and also whether they have the disease (confounding), the effect estimate may be incorrect. Generally, we would condition on the confounder to remove this issue. 
+We first need to fill in the pieces of the right hand side of the equation above.  We might look to a study for this purpose, but the validity of the estimates depends on the study design.  Accoring to [@CM], a retrospective case-control is most appropriate.  I am assuming in this case that we let the disease status be the outcome.  I however need to think about this more; perhaps if [@prince2021evaluation] does not fit this design, there may be issues with the approach I take below. Below, when I talk a bit about what would be "ideal,"  my idea is to record information on people as they test. I think this amounts to a retrospective case-control.  Note that, just focusing on $p(dz+|test,sx),$  we are really interested in the test effect. Let us therefore consider how this would be estimated in general.  First, if the data is observational and there is an unmeasured variable that affects whether someone takes a test and also whether they have the disease (confounding), the effect estimate may be incorrect. Generally, we would condition on the confounder to remove this issue. 
 
 I am still trying to think more about how this relates to the discussion below on conditioning on the necessary set of variables. I think it is different, since we can defend a marginal (non-conditioned) post-test probability, if it is tailored enough to us to inform decision-making, but we can't really defend an unadjusted estimate of, e.g., a treatment effect.  This actually seems to be the tension here.  In some cases, marginal, $p(dz+|test-)$,  is good enough, even though ideally we would have conditional $p(dz+|test-,age,sex,location,time,incubation,\dots)$.  Especially, marginal is good enough if somehow the variables we do not condition on in the marginal estimate sort of cancel each other out.
 
@@ -86,22 +90,22 @@ We can then plug these estimates into the equation above, and obtain a post-test
 Not so fast. If we define $x=(sx,ad),$ we see that it is a somewhat limited set.  For example, we were originally interested in the post-test probability given a sustained exposure.  Note,
 $$
 \begin{aligned}
-P(dz+|test-,x)&=P(dz+|test-,x,exp+)P(exp+|test-,x)+P(dz+|test-,x,exp-)P(exp-|test-,x)\\&=\alpha P(dz+|test-,x,exp+) + (1-\alpha)P(dz+|test-,x,exp-)
+p(dz+|test-,x)&=p(dz+|test-,x,exp+)p(exp+|test-,x)+p(dz+|test-,x,exp-)p(exp-|test-,x)\\&=\alpha p(dz+|test-,x,exp+) + (1-\alpha)p(dz+|test-,x,exp-)
 \end{aligned}
 $$
 where $\alpha\in [0,1].$
 
-Hence, the probability of $P(dz+|test-,x)$ that we computed above is somewhere in between what we really want to know, $P(dz+|test-,x,exp+),$ and the $P(dz+|test-,x,exp-),$ which is the probability under no sustained exposure. This may appear to not be a big deal. However, consider now what happens in the situation where instead of exposure, we did not measure symptom status:
+Hence, the probability of $p(dz+|test-,x)$ that we computed above is somewhere in between what we really want to know, $p(dz+|test-,x,exp+),$ and the $p(dz+|test-,x,exp-),$ which is the probability under no sustained exposure. This may appear to not be a big deal. However, consider now what happens in the situation where instead of exposure, we did not measure symptom status:
 $$
-p(dz+|test-) = (dz+|test-,sx+)P(sx+|test-)+P(dz+|test-,sx+)P(sx+|test-).
+p(dz+|test-) = (dz+|test-,sx+)p(sx+|test-)+p(dz+|test-,sx-)p(sx-|test-).
 $$
 According to [@prince2021evaluation], however, the presence of symptoms matters.  Hence, if we blindly compute the left hand side above, we will be estimating our post test probability ignoring symptoms, and therefore underestimate our risk. With the equation above, this is very clear that this should be the case.  However, the mechanical use of Bayes rule to estimate post-test probability often leads us to ignore this fact, surprisingly.
 
-This might go the other way; we may say, "well, symptoms seems to make a difference, but having the marginal estimate $p(dz+|test-)$ (somewhere in between) would not really change my behavior." Further, we may say, "Exposure matters, but it is unlikely that it is as important as e.g. symptoms, so we can expect the information loss we get by marginalizing over exposure to be even less than the information loss we get from marginalizing over symptoms, and therefore we might as well proceed with $P(dz+|test-)$ rather than $P(dz+|test-,exposure+).$"  Hence, in the beginning when I said that a test without an interpretation mechanism is like a car without a windshield, I was somewhat cautious with this statement.  Only gathering the appropriate data can tell us whether it is like a car without a windshield, a car without an air refreshener, or a car without brakes.
+This might go the other way; we may say, "well, symptoms seems to make a difference, but having the marginal estimate $p(dz+|test-)$ (somewhere in between) would not really change my behavior." Further, we may say, "Exposure matters, but it is unlikely that it is as important as e.g. symptoms, so we can expect the information loss we get by marginalizing over exposure to be even less than the information loss we get from marginalizing over symptoms, and therefore we might as well proceed with $p(dz+|test-)$ rather than $p(dz+|test-,exposure+).$"  Hence, in the beginning when I said that a test without an interpretation mechanism is like a car without a windshield, I was somewhat cautious with this statement.  Only gathering the appropriate data can tell us whether it is like a car without a windshield, a car without an air refreshener, or a car without brakes.
 
 # Bound:
 
-The following section is just some musings on possibly being able to make a statement like "disease probabilty is greater than this value, even though we know it is not this value precisely." We can say, for example, $P(dz+|test-)\leq P(dz+|test-,exposure+),$ which is based on the fact that a sustained exposure increases probability of disease. 
+The following section is just some musings on possibly being able to make a statement like "disease probabilty is greater than this value, even though we know it is not this value precisely." We can say, for example, $p(dz+|test-)\leq p(dz+|test-,exposure+),$ which is based on the fact that a sustained exposure increases probability of disease. 
 
 We can also somewhat more circuitously write
 
@@ -252,16 +256,18 @@ plot.p(lns,
 
 ```
 
-Now consider numebrs from the recent meta-analysis [@bruemmer2021accuracy]. Note that these estimates, as far as I know, condition on nothing except the test result (I do not know how they would otherwise pool so many estimates).  Hence, we have pre-test as 
+Now consider numbers from the recent meta-analysis [@bruemmer2021accuracy]. Note that these estimates, as far as I know, condition on nothing except the test result [and adult status?] (I do not know how they would otherwise pool so many estimates).  Hence, we have pre-test as 
 $$
-P(dz+)
+p(dz+)
 $$
 
 and post-test as 
 
 $$
-P(dz+|test-).
+p(dz+|test-).
 $$
+
+Here I have converted the table from [@bruemmer2021accuracy] into a list.  
 
 ```{r }
 
@@ -327,6 +333,11 @@ StandardQnasal =  list(
   spec=list(m=.99,l=.98,u=1)
 )
 )
+```
+
+We will plot the tests in threes, just so the plot is not too cluttered.
+
+```{r }
 get.t.posts = function(tests){
 test.posts=list()
 for(t in tests){
@@ -354,11 +365,9 @@ plot.p(test.posts,
        leg.labels=names(test.posts),main=""
        )
 }
-
-
 ```
 
-We can compare $P(dz+|test-,sx,adult)$ from [@prince2021evaluation] with $P(dz|test-)$ from [@bruemmer2021accuracy] (although really we could just compare the numbers...).
+We can compare $p(dz+|test-,sx,adult)$ from [@prince2021evaluation] with $p(dz|test-)$ from [@bruemmer2021accuracy] (although really we could just compare the numbers...).
 ```{r }
 
 pts=get.t.posts(tests)
@@ -367,14 +376,123 @@ lns = list(l.6,l.36,pts$BinaxNOW)
 
 
 plot.p(lns,
-       post.label="Lower Bound Post-test: p(dz+|test-,...)",xlab="Pre-test: p(dz+|...)",
+       post.label=" p(dz+|test-,...)",xlab="Pre-test: p(dz+|...)",
        leg.labels=c(TeX("sx+,adult+ (Prince-Guerra)"),TeX("sx-,adult+ (Prince-Geurra)"),"sx null, adult null, (Brummer)"),main="Prince-Guerra vs Brummer"
        )
 
 
 ```
 
-It seems that the asymptomatic just override the symptomatic (makes sense, fewer symptomatic.)  It is late as I write this, but actually this is a big deal.  It means that the dominant cohort will override in the marginal estimate.  I think this is common sense, going back to $\alpha$ above, which combines the two conditional distributions.  There is no reason to believe, we see now, that the marginal will be in the middle.  Hence, I guess that it is worse than just that we will be in the middle; if you are asymptomatic, you will get a decent estimate.  If you are symptomatic, you will be pulled toward asymptomatic, and get a poor estimate.
+It seems that the asymptomatic just override the symptomatic (makes sense, fewer symptomatic.)  If this is true, it is important.  It means that the difference between the conditional and marginal estimates will be asymmetric.  I think this is common sense, going back to $\alpha$ above, which combines the two conditional distributions. 
+
+$$
+\begin{aligned}
+p(dz+|test-) &= p(dz+|test-,sx+)p(sx+|test-)+p(dz+|test-,sx-)p(sx-|test-)
+\\&=p(dz+|test-,sx+)p(sx+|test-)+p(dz+|test-,sx-)(1-p(sx+|test-))
+\\&=p(dz+|test-,sx+)\alpha+p(dz+|test-,sx-)(1-\alpha),
+\end{aligned}
+$$
+where $\alpha\in[0,1].$
+
+It should (I think) be more likely that a symptom is negative given that a test is negative.  There is no reason to believe, we see now, that the marginal $p(dz+|test-)$ will be halfway between $p(dz+|test-,sx+)$ and $p(dz+|test-,sx-)$.  Hence,  if you are asymptomatic, you will get a decent (conditional) estimate;  if you are symptomatic, you will be pulled toward asymptomatic, and get a poor (conditional) estimate.
+
+I am going to explore this a bit more. We will make our variables $Z\sim Bern(expit(\beta X)).$
+```{r }
+expit=function(x){exp(x)/(1+exp(x))}
+plot(-10:10,expit(-10:10))
+```
+
+Set the sample size.
+```{r }
+set.seed(1)
+n=10000
+```
+
+Set prevalence, $pdz.$ 
+```{r }
+pdz=.1
+```
+
+Let $dz\sim Bern(pdz), sx\sim Bern(expit(-2+(2+2)dz)),$ so we generally don't have symptoms unless disease is present. Let $ts\sim Bern(expit(-3+(3+2.5)dz+2.5(sx)(dz))),$ so we tend not to have positive tests unless there is disease, and the presence of symptoms along with the disease increases the probability greatly.
+```{r }
+dz = rbinom(n,1,pdz)
+sx=rbinom(n,1,expit(-2+(2+2)*dz))
+#antigen = rnorm(n,mean=-3+sx*.1+dz*1) #todo: explore cutoff
+ts = rbinom(n,1,expit(-3+(2+1.5)*dz+1.5*sx*dz))
+df = data.frame(dz=dz,sx=sx,ts=ts)
+```
+
+Calculate the marginal sensitivity and specificity
+
+```{r }
+ptspdzp=dim(df[(df$dz==1)&(df$ts==1),])[1]/dim(df[(df$dz==1),])[1]
+ptsndzn=dim(df[(df$dz==0)&(df$ts==0),])[1]/dim(df[(df$dz==0),])[1]
+print(c("marg sens",round(ptspdzp,2)))
+print(c("marg spec",round(ptsndzn,2)))
+```
+
+Calculate the conditional sensitivities and specificities.  First, given symptoms 
+```{r }
+ptspdzpsxp = dim(df[(df$ts==1)&(df$dz==1)&(df$sx==1),])[1]/dim(df[(df$dz==1)&(df$sx==1),])[1]
+ptsndznsxp = dim(df[(df$ts==0)&(df$dz==0)&(df$sx==1),])[1]/dim(df[(df$dz==0)&(df$sx==1),])[1]
+print(c("Cond sens, sx-",round(ptspdzpsxp,2)))
+print(c("Cond sens, sx-",round(ptsndznsxp,2)))
+```
+
+Now no symptoms
+```{r }
+ptspdzpsxn = dim(df[(df$ts==1)&(df$dz==1)&(df$sx==0),])[1]/dim(df[(df$dz==1)&(df$sx==0),])[1]
+ptsndznsxn = dim(df[(df$ts==0)&(df$dz==0)&(df$sx==0),])[1]/dim(df[(df$dz==0)&(df$sx==0),])[1]
+print(c("Cond spec, sx+",round(ptspdzpsxn,2)))
+print(c("Cond spec, sx+",round(ptsndznsxn,2)))
+```
+
+```{r }
+psxptsn = dim(df[(df$sx==1)&(df$ts==0),])[1]/dim(df[(df$ts==0),])[1]
+psxntsn = dim(df[(df$sx==0)&(df$ts==0),])[1]/dim(df[(df$ts==0),])[1]
+print(c("P(sx+|test-)",round(psxptsn,2)))
+print(c("P(sx-|test-)",round(psxntsn,2)))
+```
+
+```{r }
+tests=list(
+condsxp=list(
+  nm='Conditional sx+',
+  sens=list(m=ptspdzpsxp,l=ptspdzpsxp,u=ptspdzpsxp),
+  spec=list(m=ptsndznsxp,l=ptsndznsxp,u=ptsndznsxp)
+  ),
+marg=list(
+  nm='Marginal',
+  sens=list(m=ptspdzp,l=ptspdzp,u=ptspdzp),
+  spec=list(m=ptsndzn,l=ptsndzn,u=ptsndzn)
+),
+condsxn=list(
+  nm='Conditional sx-',
+  sens=list(m=ptspdzpsxn,l=ptspdzpsxn,u=ptspdzpsxn),
+  spec=list(m=ptsndznsxn,l=ptsndznsxn,u=ptsndznsxn)
+  )
+)
+
+pts=get.t.posts(tests)
+
+plot.p(pts,
+       post.label="p(dz+|test-,...)",xlab="Pre-test: p(dz+|...)",
+       leg.labels=c(TeX("Conditional: p(dz+|test-,sx+)"),"Marginal: p(dz+|test-)",TeX("Conditional: p(dz+|test-,sx-)")),main="Conditional vs. marginal (simulation)"
+       )
+
+```
+
+This is contrary to my expectation that we would interpolate between the two conditionals with weight placed according to $p(sx|test-)$.
+
+$$
+\begin{aligned}
+p(dz+|test-) &= p(dz+|test-,sx+)p(sx+|test-)+p(dz+|test-,sx-)p(sx-|test-)
+\\&=p(dz+|test-,sx+)p(sx+|test-)+p(dz+|test-,sx-)(1-p(sx+|test-))
+\\&=p(dz+|test-,sx+)\alpha+p(dz+|test-,sx-)(1-\alpha),
+\end{aligned}
+$$
+
+where $\alpha\in[0,1].$
 
 
 # Ideally:
@@ -395,7 +513,7 @@ Also, ideally, the test result would be a continuous variable (eg, amount of vir
 
 It is not clear this is how it works, but, in general, test cutoffs have highly significant implications. If indeed there is a cutoff, what is the reward function that is being optimized? It appears that these tests were designed to minimize false positive results. However, that is not, in general, always a good idea. Decreasing false positives (e.g., by setting a high cutoff) also increases false negatives. In general, for someone who works in a highly populated area, or with vulnerable populations, a false negative is worse than a false positive.  Therefore, it should be a priority not to include a threshold in the test, if possible.
 
-[Add thought experiment about acting without post test]
+As a thought experiment, consider a world in which people do not interpret tests, and just act according to the test result.  In other words, if I test negative, I assume I have no disease, and I act accordingly. In this case, I believe that the cutoff will set the realized reward entirely.  In other words, it is important to interpret a test in order to avoid having the reward function be set externally by the cutoff. As we have seen, interpretation is complicated.  Therefore, it is not unlikely that many people do act as if the test result is the true result, and therefore if there is a cutoff in the test, it has broad implications in practice.
 
 # Serial testing:
 
@@ -405,7 +523,7 @@ Generally, though, it is also advised to take the two tests e.g. 24 hours apart 
 
 ## Viral load:
 
-I mentioned viral load above.  This was mentioned in a blog post \url{https://www.lesswrong.com/posts/Sct2SNhByS8Lzenub/rapid-antigen-tests-for-covid}.  Essentially, viral load (obviously) affects sensitivity and specificity.  It would be important to measure the time of supposed exposure in order to take this into account $P(dz+|...,\text{exposure time},...)$.
+I mentioned viral load above.  This was mentioned in a blog post \url{https://www.lesswrong.com/posts/Sct2SNhByS8Lzenub/rapid-antigen-tests-for-covid}.  Essentially, viral load (obviously) affects sensitivity and specificity.  It would be important to measure the time of supposed exposure in order to take this into account $p(dz+|...,\text{exposure time},...)$.
 
 # Positive tests:
 
