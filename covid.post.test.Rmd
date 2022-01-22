@@ -16,9 +16,9 @@ knitr::opts_chunk$set(echo = TRUE)
 
 # Summary
 
-Tests are crucial for controlling the covid-19 pandemic. Test result interpretation is also important. For example, a test could be negative, but covid-19 might still be present.  After getting a negative rapid antigen test a few months ago, I tried to use a standard approach to interpret the result.  Namely, I used Bayes rule to calculate post-test probability.  This was not easy, and my interest in the problem has made this an ongoing effort in my free time.  I recorded my efforts at https://discourse.datamethods.org/t/determining-post-test-probability-of-covid-19/4723/12, and I have tried to collect my most updated thoughts at https://github.com/samuelweisenthal/BinaxNOWpostTestProb/blob/main/covid.post.test.pdf. Difficulties included specifying my pretest probability, getting appropriate estimates for the test operating characteristics, and understanding my estimate in light of other available information, such as exposure and symptom status. Beware of the trap: your pretest probability cannot depend on variables that are different from those collected in the study that evaluated the test.  (See also the diagnosis chapter in http://hbiostat.org/doc/bbr.pdf.)  This trap is particularly problematic when you have reason to believe that certain variables, such as symptom status or exposure, make it more likely that you have the disease at baseline. 
+Tests are crucial for controlling the covid-19 pandemic. Test result interpretation is also important. For example, a test could be negative, but covid-19 might still be present.  After getting a negative rapid antigen test a few months ago, I tried to use Bayes rule, the standard approach, to calculate post-test probability.  This was not easy.  I recorded my efforts at https://discourse.datamethods.org/t/determining-post-test-probability-of-covid-19/4723/12, and I have tried to collect my most updated thoughts at https://github.com/samuelweisenthal/BinaxNOWpostTestProb/blob/main/covid.post.test.pdf. Difficulties included specifying my pretest probability, getting appropriate estimates for the test operating characteristics, and understanding my estimate in light of other available information, such as exposure and symptom status. Beware, there seems to be a trap: your pretest probability cannot depend on variables that are different from those collected in the study that evaluated the test.  (See also the diagnosis chapter in http://hbiostat.org/doc/bbr.pdf.)  This trap is particularly problematic when you have reason to believe that certain variables, such as symptom status or exposure, make it more likely that you have the disease at baseline. 
 
-Overall, I found this to be a hard problem, based both on  inherent difficulties and  also on the indirect way in which I had to go about it.  There may be ways to make the entire process more direct, shifting the burden of test interpretation from the person taking the test to statistical analysts who have appropriate tools and databases.  One way to do this might be to maintain databases that could be used to fit  models for post-test probability that are specific to location and time, as well as other important covariates.  In this case, someone would just need to go to a website and enter some information to get a test interpretation.
+Overall, I found this to be a hard problem, based both on  inherent difficulties and  also on the indirect way in which I had to go about it.  There may be ways to make the entire process more direct, shifting the burden of test interpretation from the person taking the test to statistical analysts who have appropriate tools and databases.  For example, it might be best to maintain databases that could be used to fit  models for post-test probability that are specific to location and time, as well as other important covariates.  In this case, we would just need to go to a website and enter some information to get a test interpretation.  One day, this could be the dominant paradigm in all of medical testing.
 
 # Background 
 
@@ -35,10 +35,10 @@ In some ways, it may be best to stop here. However, I needed an answer at the ti
 
 # Ideal test interpretation framework
 
-Note that to obtain the graphs above, we are working with what we have available. This all gets somewhat confusing.  One way to remove some (not all) difficulty here is to just take a direct approach from the beginning, which I will call the "ideal" approach.  However, the following would be ideal: every time one takes a test, one goes to a website and enters information such as age, sex, zip code, and test result. The website then calculates post-test probability based on a model for, explicitly,
+Note that to obtain the graphs below, we are working with what we have available. This all gets somewhat confusing.  One way to remove some (not all) difficulty here is to just take a direct approach from the beginning, which I will call the "ideal" approach.  However, the following would be ideal: every time one takes a test, one goes to a website and enters information such as age, sex, zip code, and test result. The website then calculates post-test probability based on a model for, explicitly,
 
 $$
-p(dz+|test,age,sex,symptoms,location, time, incubation, strain,..)
+p(dz+|test,age,sex,symptoms,location, time, onset, strain,..).
 $$
 
 The database and corresponding model would be updated in real-time based on geographically and temporally relevant statistics. Note that this post-test probability would depend very much on time, and therefore the model would have to be updated probably each day. It seems though that, barring sampling issues, we have this data. There is observational data collected when people report their test results (in other words, we collect information such as age, zip code, etc). Often, also, we have a PCR confirmation. It is unclear however whether we will have enough of the variables mentioned above, which are still necessary.
@@ -352,7 +352,9 @@ lns = list(l.6,l.36,pts$BinaxNOW)
 
 plot.p(lns,
        post.label=" p(dz+|test-,...)",xlab="Pre-test: p(dz+|...)",
-       leg.labels=c(TeX("sx+,adult+ (Prince-Guerra)"),TeX("sx-,adult+ (Prince-Geurra)"),"sx null, adult null, (Brummer)"),main="Prince-Guerra vs Brummer"
+       leg.labels=c(TeX("sx+,adult+ (Prince-Guerra)"),
+                    TeX("sx-,adult+ (Prince-Geurra)"),"sx null, adult null, (Brummer)"),
+       main="Prince-Guerra vs Brummer"
        )
 
 
@@ -453,14 +455,17 @@ It seems that it must favor the asymptomatic conditional.  What is going on here
 
 ```{r }
 print(c("p(dz+|test-)",pdzptsn))
-print(c("p(dz+|test-,sx+)p(sx+|test-)+p(dz+|test-,sx-)p(sx-|test-)",pdzptsnsxp*psxptsn + pdzptsnsxn*psxntsn))
+print(c("p(dz+|test-,sx+)p(sx+|test-)+p(dz+|test-,sx-)p(sx-|test-)",
+        pdzptsnsxp*psxptsn + pdzptsnsxn*psxntsn))
 
 print(c("p(dz+|test-,sx+)",pdzptsnsxp))
-print(c("p(dz+|test-,sx+)",get.post.tests(sens=ptspdzpsxp,spec=ptsndznsxp,pre.tests=c(pdzpsxp))))
+print(c("p(dz+|test-,sx+)",get.post.tests(sens=ptspdzpsxp,
+                                          spec=ptsndznsxp,pre.tests=c(pdzpsxp))))
 #get.post.tests()
 
 print(c("p(dz+|test-,sx-)",pdzptsnsxn))
-print(c("p(dz+|test-,sx-)",get.post.tests(sens=ptspdzpsxn,spec=ptsndznsxn,pre.tests=c(pdzpsxn))))
+print(c("p(dz+|test-,sx-)",get.post.tests(sens=ptspdzpsxn,
+                                          spec=ptsndznsxn,pre.tests=c(pdzpsxn))))
 
 #cbind(pts$`Conditional sx+`$m,pts$`Conditional sx-`$m,pts$$p(dz+|test-)$$m,pre.tests)[21,]
 #cbind(pdzptsnsxp,pdzptsnsxn)
@@ -489,7 +494,9 @@ pts=get.t.posts(tests)
 
 plot.p(pts,
        post.label="p(dz+|test-,...)",xlab="Pre-test: p(dz+|...)",
-       leg.labels=c(TeX("p(dz+|test-,sx+)")," p(dz+|test-)",TeX("p(dz+|test-,sx-)")),main="p(dz+|test-,sx+) vs. p(dz+|test-) (simulation)"
+       leg.labels=c(TeX("p(dz+|test-,sx+)")," p(dz+|test-)",
+                    TeX("p(dz+|test-,sx-)")),
+       main="p(dz+|test-,sx+) vs. p(dz+|test-) (simulation)"
        )
 
 ```
