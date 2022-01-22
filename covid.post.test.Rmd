@@ -43,7 +43,13 @@ p(dz+|test-)=\frac{1-sens}{spec(1-pretest)+(1-sens)pretest}pretest
 \end{aligned}
 $$
 
-Note that this implies that higher sensitivity will increase post-test probability of the disease being present given a negative test and higher specificity will decrease post-test probability.  Hence, our lower bound on post-test probability will use the upper confidence bound of sensitivity and the lower confidence bound of specificity (and vice versa for the upper bound on post-test probability).
+Note that this implies that sensitivity of 1 gives 0 post-test and sensitivity of 0 gives $\frac{pretest}{spec(1-pretest)}.$ So higher sensitivity at fixed specificity will decrease post-test probability of the disease being present.
+
+
+Fixing sensitivity, $spec=0$ implies $\frac{1-sens}{sens}$ and $spec=1$  implies $\frac{(1-sens)}{(1-pretest)+(sens)(pretest)}prestest.$
+This is not as clear, but I guess I will assume that higher specificity will decrease post-test probability since it is in the denominator in the original expression.  
+
+Hence, our lower bound on post-test probability will use the lower confidence bound of sensitivity and the lower confidence bound of specificity (and vice versa for the upper bound on post-test probability).
 
 
 ```{r }
@@ -189,13 +195,16 @@ test.posts=list()
 for(t in tests){
   test.posts[[t$nm]]=list(
     m=get.post.tests(sens=t$sens$m,spec=t$spec$m,pre.tests),
-    l=get.post.tests(sens=t$sens$l,spec=t$spec$u,pre.tests),
-    u=get.post.tests(sens=t$sens$u,spec=t$spec$l,pre.tests)
+    l=get.post.tests(sens=t$sens$l,spec=t$spec$l,pre.tests),
+    u=get.post.tests(sens=t$sens$u,spec=t$spec$u,pre.tests)
     )
   
 }
 test.posts
 }
+```
+
+```{r }
 
 #par(mfrow=c(12,1))
 for (k in 1:12){
