@@ -11,7 +11,9 @@ knitr::opts_chunk$set(echo = TRUE)
  library(latex2exp)
 ```
 
-# Summary:
+\tableofcontents
+
+# Summary
 
 Tests are crucial for controlling the covid-19 pandemic. Test result interpretation is also important. For example, a test could be negative, but covid-19 might still be present.  After getting a negative rapid antigen test a few months ago, I tried to use a standard approach to interpret the result.  Namely, I used Bayes rule to calculate post-test probability.  This was not easy.  I recorded my efforts at https://discourse.datamethods.org/t/determining-post-test-probability-of-covid-19/4723/12, and I have tried to collect my most updated thoughts at https://github.com/samuelweisenthal/BinaxNOWpostTestProb/blob/main/covid.post.test.pdf. Difficulties included specifying my pretest probability, getting appropriate estimates for the test operating characteristics, and understanding my estimate in light of other information I had available, such as exposure and symptom status. Beware of the trap: your pretest probability cannot depend on variables that are different from the ones collected in the study that evaluated the test.  (See also the diagnosis chapter in http://hbiostat.org/doc/bbr.pdf.)  This trap is particularly problematic when you have reason to believe that certain variables, such as symptom status or exposure, make it more likely that you have the disease at baseline. 
 
@@ -21,7 +23,9 @@ Overall, I found this to be a hard problem, based both on  inherent difficulties
 
 Some months ago, I wanted to, given what I had available, try to determine my post-test probability of covid-19 after a negative Binax NOW rapid antigen test and a sustained, unmasked exposure. Originally, I hoped we could apply Bayes rule to some estimates from the literature.  It turns out to be more complicated.  
 
-## Marginal
+# Marginal
+
+## Bayes rule
 
 To begin this document, I will consider the easier problem of estimating post-test probability given a negative test only, with no exposure.  In other words, let us forget about the conditional post-test probability,  $p(dz+|test-,exposure),$, and consider the "marginal" $p(dz+|test-)$ (this is almost always done, unfortunately, when we talk about post-test probabilities). We  have 
 
@@ -32,10 +36,14 @@ p(dz+|test-)&=\frac{p(test-|dz+)}{p(test-)}p(dz+)\\
 &=\frac{1-sens}{spec(1-pretest)+(1-sens)pretest}pretest
 \end{aligned}
 $$
+## On renaming
 
 If we can fill in the pieces of this equation, we can provide an estimate of the left hand side.  Note that in the last line, I rename probabilities as sens=sensitivity and spec=specificity.  This renaming, interestingly, can cause some difficulty; we understand the terms in the second to last line, but the renaming in the last line renames and strips the terms of their probabilistic meaning (along with removing information about what is being conditioned upon), which can lead to misuse, and may be related to the persistance of the framework for test interpreation that gives so many issues below [@moons2003sensitivity].  It is worth noting that test interpretation might be much better if there were databases kept such that we could just estimate $p(dz+|test-, \text{ other variables})$ directly, rather than having to use Bayes rule. This type  of modeling does not occur usually because each model would be specific to time and location, at least.  This sounds like a daunting task, therefore, to fit all of these models, but the reality is that if this is not done that way, it has to be done another way --- it just shifts the responsibility of interpretation from the test manufacturer or some organization with appropriate expertise onto the person using the test, and we are left with nothing but the equation above, as far as I know.  
 
+##  Estimates from [@bruemmer2021accuracy]
 Here, I am going to use this equation to calculate the post-test probability given a negative test for a battery of rapid antigen tests. Consider numbers from the recent meta-analysis [@bruemmer2021accuracy]. Note that these estimates, as far as I know, condition on nothing except the test result [and adult status? read more carefully] (I do not know how they would otherwise pool so many estimates).  The validity of the estimates depend on the designs of the studies that were analyzed in the meta-analyses.  Accoring to [@CM], a retrospective case-control is most appropriate. We assume that the studies used to obtain the sensitivities and specificities had a reasonable design, which is not always the case.  
+
+## Implementation
 
 I am going to show my code to promote transparency and reproducibility.  You can find the notebook in my GitHub; use at your own risk. You are free to use and modify this code as long as you allow others to use and modify your modification of this code.
 
@@ -108,7 +116,7 @@ legend("topleft",legend=leg.labels,bg='white',
 }
 ```
 
- 
+
 Here I have converted the table from [@bruemmer2021accuracy] into a list.  
 
 ```{r }
@@ -177,6 +185,7 @@ StandardQnasal =  list(
 )
 ```
 
+## Confidence bounds (work in progress)
 We want to take into account the uncertainty in the estimates above.  We need to choose which values of sensitivity and specificity will be used for the confidence bounds. I am pretty sure I am correct about sensitivity here.  I am not sure about specificity, but there is very little variation in specificity over the tests anyway. Recall from above that
 
 $$
@@ -208,9 +217,11 @@ test.posts
 }
 ```
 
+## Difficulties
 
 We will plot now the post test probabilities for each test as a function of the pretest probability and the operating characteristics above.  Note that these plots may be falsely comforting.  First, how do we specify the pretest probability?  It's not necessarily prevalence, because prevalence is conditional  upon  location and time, which are conditional upon the geographic and temporal characteristics of the population.  However, the sensitivity and specificity estimates do not account for these things.  Second, as I will discuss below, assuming I can specify a reasonable pretest probability, what if there are things about me that are important to take into consideration?  I discuss exposure below, but how about symptom status, variant, time since symptom onset, etc?   *You cannot simply change your pretest accordingly; sensitivity and specificity must also be updated.* To see this, look back at the derivation above, or read the diagnosis chapter in [@BBR].  
 
+## Plots using [@bruemmer2021accuracy]
 
 ```{r }
 
@@ -462,7 +473,7 @@ plot.p(pts,
 #cbind(pts$`Conditional sx+`$m*psxptsn + pts$`Conditional sx-`$m*psxntsn,
 #pts$Marginal$m)
 ```
-Again, this is contrary to my expectation. Maybe there is a bug in the code.  I am pretty sure the following probability statement, copied from above, is not wrong...
+Again, this is contrary to my expectation.  I will have to think more about this.  I am pretty sure the following probability statement, copied from above, is not wrong...
 
 $$
 \begin{aligned}
@@ -472,8 +483,7 @@ p(dz+|test-) &= p(dz+|test-,sx+)p(sx+|test-)+p(dz+|test-,sx-)p(sx-|test-)
 \end{aligned}
 $$
 
-I apologize for bringing up this uncertainty here.  In any case, it should be certain that the marginal falls within the conditionals.  It should be certain that the marginal might be closer to one than to another. It is therefore the case that how much you will lose out by constraining yourself to the study covariates depends on your covariates.   This all gets somewhat confusing.  One way to remove confusion is to just take a different approach from the beginning, which I will call the "ideal" approach.
-
+In any case, it should be certain that the marginal falls within the conditionals.  It should be certain that the marginal might be closer to one than to another. It is therefore the case that how much you will lose out by constraining yourself to the study covariates depends on your covariates.   
 
 ## Bound
 
@@ -508,7 +518,7 @@ So, even though the estimates in [@prince2021evaluation] do not apply to our sit
 
 # Ideally
 
-Note that to obtain the graph above, we are working with what we have available. However, the following would be ideal: every time one takes a test, one goes to a website and enters information such as age, sex, zip code, and test result. The website then calculates post-test probability based on a model for, explicitly,
+Note that to obtain the graphs above, we are working with what we have available. This all gets somewhat confusing.  One way to remove some (not all) difficulty here is to just take a direct approach from the beginning, which I will call the "ideal" approach.  However, the following would be ideal: every time one takes a test, one goes to a website and enters information such as age, sex, zip code, and test result. The website then calculates post-test probability based on a model for, explicitly,
 
 $$
 p(dz+|test,age,sex,symptoms,location, time, incubation, strain,..)
