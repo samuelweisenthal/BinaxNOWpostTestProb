@@ -37,11 +37,13 @@ p(dz+|test-)&=\frac{p(test-|dz+)}{p(test-)}p(dz+)\\
 &=\frac{1-sens}{spec(1-pretest)+(1-sens)pretest}pretest
 \end{aligned}
 $$
+
 ## On renaming
 
 If we can fill in the pieces of this equation, we can provide an estimate of the left hand side.  Note that in the last line, I rename probabilities as sens=sensitivity and spec=specificity.  This renaming, interestingly, can cause some difficulty; we understand the terms in the second to last line, but the renaming in the last line renames and strips the terms of their probabilistic meaning (along with removing information about what is being conditioned upon), which can lead to misuse, and may be related to the persistance of the framework for test interpreation that gives so many issues below [@moons2003sensitivity].  It is worth noting that test interpretation might be much better if there were databases kept such that we could just estimate $p(dz+|test-, \text{ other variables})$ directly, rather than having to use Bayes rule. This type  of modeling does not occur usually because each model would be specific to time and location, at least.  This sounds like a daunting task, therefore, to fit all of these models, but the reality is that if this is not done that way, it has to be done another way --- it just shifts the responsibility of interpretation from the test manufacturer or some organization with appropriate expertise onto the person using the test, and we are left with nothing but the equation above, as far as I know.  
 
 ##  Estimates from [@bruemmer2021accuracy]
+
 Here, I am going to use this equation to calculate the post-test probability given a negative test for a battery of rapid antigen tests. Consider numbers from the recent meta-analysis [@bruemmer2021accuracy]. Note that these estimates, as far as I know, condition on nothing except the test result [and adult status? read more carefully] (I do not know how they would otherwise pool so many estimates).  The validity of the estimates depend on the designs of the studies that were analyzed in the meta-analyses.  Accoring to [@CM], a retrospective case-control is most appropriate. We assume that the studies used to obtain the sensitivities and specificities had a reasonable design, which is not always the case.  
 
 ## Implementation
@@ -187,6 +189,7 @@ StandardQnasal =  list(
 ```
 
 ## Confidence bounds (work in progress)
+
 We want to take into account the uncertainty in the estimates above.  We need to choose which values of sensitivity and specificity will be used for the confidence bounds. I am pretty sure I am correct about sensitivity here.  I am not sure about specificity, but there is very little variation in specificity over the tests anyway. Recall from above that
 
 $$
