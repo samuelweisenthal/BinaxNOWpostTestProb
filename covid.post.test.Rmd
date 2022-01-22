@@ -1,5 +1,6 @@
 ---
 title: "On determining the post-test probability of covid-19"
+author: Sam Weisenthal (firstnamelastname@gmail.com)
 output:
   pdf_document: default
   html_document: default
