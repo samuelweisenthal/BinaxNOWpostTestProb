@@ -16,7 +16,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 # Summary
 
-Tests are crucial for controlling the covid-19 pandemic. Test result interpretation is also important. For example, a test could be negative, but covid-19 might still be present.  After getting a negative rapid antigen test a few months ago, I tried to use a standard approach to interpret the result.  Namely, I used Bayes rule to calculate post-test probability.  This was not easy, and my interest in the problem has made this an ongoing effort in my free time.  I recorded my efforts at https://discourse.datamethods.org/t/determining-post-test-probability-of-covid-19/4723/12, and I have tried to collect my most updated thoughts at https://github.com/samuelweisenthal/BinaxNOWpostTestProb/blob/main/covid.post.test.pdf. Difficulties included specifying my pretest probability, getting appropriate estimates for the test operating characteristics, and understanding my estimate in light of other available information, such as exposure and symptom status. Beware of the trap: your pretest probability cannot depend on variables that are different from the ones collected in the study that evaluated the test.  (See also the diagnosis chapter in http://hbiostat.org/doc/bbr.pdf.)  This trap is particularly problematic when you have reason to believe that certain variables, such as symptom status or exposure, make it more likely that you have the disease at baseline. 
+Tests are crucial for controlling the covid-19 pandemic. Test result interpretation is also important. For example, a test could be negative, but covid-19 might still be present.  After getting a negative rapid antigen test a few months ago, I tried to use a standard approach to interpret the result.  Namely, I used Bayes rule to calculate post-test probability.  This was not easy, and my interest in the problem has made this an ongoing effort in my free time.  I recorded my efforts at https://discourse.datamethods.org/t/determining-post-test-probability-of-covid-19/4723/12, and I have tried to collect my most updated thoughts at https://github.com/samuelweisenthal/BinaxNOWpostTestProb/blob/main/covid.post.test.pdf. Difficulties included specifying my pretest probability, getting appropriate estimates for the test operating characteristics, and understanding my estimate in light of other available information, such as exposure and symptom status. Beware of the trap: your pretest probability cannot depend on variables that are different from those collected in the study that evaluated the test.  (See also the diagnosis chapter in http://hbiostat.org/doc/bbr.pdf.)  This trap is particularly problematic when you have reason to believe that certain variables, such as symptom status or exposure, make it more likely that you have the disease at baseline. 
 
 Overall, I found this to be a hard problem, based both on  inherent difficulties and  also on the indirect way in which I had to go about it.  There may be ways to make the entire process more direct, shifting the burden of test interpretation from the person taking the test to statistical analysts who have appropriate tools and databases.  One way to do this might be to maintain databases that could be used to fit  models for post-test probability that are specific to location and time, as well as other important covariates.  In this case, someone would just need to go to a website and enter some information to get a test interpretation.
 
@@ -25,7 +25,7 @@ Overall, I found this to be a hard problem, based both on  inherent difficulties
 Some months ago, I wanted to, given what I had available, try to determine my post-test probability of covid-19 after a negative Binax NOW rapid antigen test and a sustained, unmasked exposure. Originally, I hoped we could apply Bayes rule to some estimates from the literature.  It turns out to be more complicated.  
 
 
-To begin this document, I will consider the easier problem of estimating post-test probability given a negative test only, with no exposure.  In other words, let us forget about the conditional post-test probability,  $p(dz+|test-,exposure),$, and consider the "$p(dz+|test-)$" $p(dz+|test-)$ (this is almost always done, unfortunately, when we talk about post-test probabilities).  
+To begin this document, I will consider the easier problem of estimating post-test probability given a negative test only, with no exposure.  In other words, let us forget about the conditional post-test probability,  $p(dz+|test-,exposure),$ and consider the "$p(dz+|test-)$" (this is almost always done, unfortunately, when we talk about post-test probabilities).  
 
 ## The difficulty of pre-test probability $p(dz+)$
 
@@ -46,7 +46,7 @@ The database and corresponding model would be updated in real-time based on geog
 Note that age is given to us as "adult" - a large loss of info, symptom status is binarized, test result is binarized, and exposure was binarized by me, unfortunately (although we could just treat it as continuous). Also, ideally, the test result would be a continuous variable (eg, amount of viral load). This may be difficult due to at-home testing kit constraints. However, it seems currently that there is some cutoff above which a test is called positive. If it is possible for the tests to convey more information, such as through color or some type of numerical scale, it would lead to better estimates of the post-test probability (assuming there is no real hard cutoff - I am not sure).
 
 
-# p(dz+|test-)
+# Estimating $p(dz+|test-)$
 
 Now, let us consider the problem of estimating  $p(dz+|test-)$.  We  have, by Bayes rule,
 
@@ -260,7 +260,7 @@ plot.p(test.posts,
 ```
 
 
-# p(dz+|test-,covariates) (work in progress)
+# Estimating $p(dz+|test-,covariates)$ (work in progress)
 
 
 Let  us consider the general problem of conditioning on other covariates.  Note, again, that the post-test estimates above do not take into account the extra variable that we call “exposure.”  Before thinking about exposure, let us consider a different variable: symptoms. Define sx=symptoms, ad = adult, and dz=disease (covid-19). I am including symptom status and "adult" as done in a study that measures these things, [@prince2021evaluation], but this is more for the sake of illustration than to give an accurate estimate.
