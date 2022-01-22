@@ -13,147 +13,39 @@ knitr::opts_chunk$set(echo = TRUE)
 
 # Summary:
 
-Covid-19 tests are crucial. Interpreting tests is also crucial, and it may not necessarily be just an application of Bayes rule. Here, I will try to provide an interpretation of a negative test, discuss some of the difficulties, and mention a more systematic solution.
-
-In more detail:
-
-1. It is crucial that we not just test for covid-19, but also correctly interpret the test result, especially with rapid antigen tests.
-2. For example, even with a negative rapid antigen test result, one may still have covid.
-3. One needs to estimate the probability of covid given the test result, $p(dz|test,x,z).$
-4. Often, this is done with Bayes rule $p(dz|test,x)=p(test|dz,x)p(dz|x)/p(test|x),$ where dz=covid and $x$ is some set of covariates. Commonly, one tries to fill in the pieces of Bayes rule with estimates of $p(test|dz,x)$ from a study that measures $test,dz,$ and covariates $x.$ However, to do so, one's pretest probability $p(test|x)$ must depend on no more and no less than x from the study (and, of course, the estimate $p(test|x)$ must be valid, which depends on the study design).
-6. Often, we estimate $p(dz|test,x)$, but we really think we are estimating (and really want to estimate)  $p(dz|test,x,z),$ where $z$ contains information not in $x$, such as time-dependent and geography-dependent variables that depend on local prevalence, time of year, symptoms, known exposures, time since exposure, etc…
-7. Sometimes the constraint to the variables in the study is important, sometimes it’s not.  Eg, based on [@prince2021evaluation], a study that investigated the BINAX Now covid rapid tests, the presence of symptoms can change the post-test probability estimate significantly.  Hence, if we ignored the fact that we have symptoms when estimating post-test probability, we would obtain an estimate that is too low.
-8. It is possible sometimes that, for specific variables in $z$ for which we understand the correlation with disease, assuming other variables we have not taken into account are negligible or cancel each other out, we can make statements about bounds on $p(dz|test,x,z)$ using $p(dz|test,z)$.
-9. Overall, we should maintain location-specific, continually updating databases of $dz, test,$ and covariates that are relevant, and we should also perform more studies to try to see what should be included in this set of covariates.
+Tests are crucial for controlling the covid-19 pandemic. Test result interpretation is also important. For example, a test could be negative, but covid-19 might still be present.  After getting a negative rapid antigen test a few months ago, I tried to interpret the result.  I tried to go through the caclulation using a standard approach. Difficulties included specifying my pretest probability and getting appropriate estimates for the test operating characteristics. Beware of the trap: your pretest probability cannot depend on variables that are different from the ones collected in the study that evaluated the test.  (See also the diagnosis chapter in http://hbiostat.org/doc/bbr.pdf.)  This  is particularly problematic when you have reason to believe that certain variables, such as symptom status or exposure, make it more likely that you have the disease at baseline. You cannot include those variables into your pretest probability unless the study that evaluated the test also collected those variables and accounted for them in their estimates of the test  operating characteristics, which is rarely the case.  I found this to be a hard problem, based mostly on the indirect way in which I had to go about it.  There may be better ways, such as maintaining models that are specific to location and time, as well as other covariates of the test taker, that will help shift the burden of test interpretation from the person taking the test to statistical analysts who have appropriate tools and databases.
 
 # Background 
 
-Some months ago, I wanted to, given what I had available, try to determine the post-test probability of covid-19 in a person who had a negative Binax NOW rapid antigen test after a sustained, unmasked exposure. Originally, I hoped we could apply Bayes' rule to some estimates from the literature. Note, however, that the estimates in the literature do not take into account the extra variable that we call “exposure.” We will call this $z.$
+Some months ago, I wanted to, given what I had available, try to determine the post-test probability of covid-19 in a person who had a negative Binax NOW rapid antigen test after a sustained, unmasked exposure. Originally, I hoped we could apply Bayes rule to some estimates from the literature.  It turns out to be more complicated.  
 
-# Screening:
 
-We would ignore this extra variable $z$ if we were “screening,” or randomly checking whether we have covid-19. In this case, we are not taking the test "because of something that happened,” but just "because." However, “screening” is elusive — e.g., even if one believes that one is “screening,” if one is doing so in order to determine whether it is safe to return home for the holiday, the fact that it is holiday season seems to actually make it so that they are no longer “screening”. In that case, one is testing because it is near the holiday, and the holiday season affects the pre-test probability. Hence, one is rarely "screening," and there is a need to take other variables into account (e.g., see [@moons2003sensitivity] and [@BBR]). The event “sustained exposure” is essentially one of those "other variables."
-
-# The standard approach:
-
-Define sx=symptoms, ad = adult, and dz=disease (covid-19). I am including symptom status and "adult" as done in [@prince2021evaluation], but this is more for the sake of illustration than to give an accurate estimate.  I will also include some charts from a more recent meta-analysis below.
-
-Note:
+To begin, let us forget about the conditional post-test probability,  $p(dz+|test-,exposure),$, and consider the "marginal" $p(dz+|test-)$, which is commonly done. We  have 
 
 $$
 \begin{aligned}
-p(dz+|test-,sx)&=\frac{p(test-|dz+,sx)}{p(test-|sx)}p(dz+|sx)\\
-&=\frac{1-p(test+|dz+,sx)}{p(test-|dz-,sx)p(dz-|sx)+p(test-|dz+,sx)p(dz+|sx)}p(dz+|sx)\\
+p(dz+|test-)&=\frac{p(test-|dz+)}{p(test-)}p(dz+)\\
+&=\frac{1-p(test+|dz+)}{p(test-|dz-)p(dz-)+p(test-|dz+)p(dz+)}p(dz+)\\
 &=\frac{1-sens}{spec(1-pretest)+(1-sens)pretest}pretest
 \end{aligned}
 $$
 
-So, we have an equation that seems to allow us to find the post-test probability given commonly estimated test operating characteristics.  Originally, I jumped to looking for studies to help me fill in the pieces of the second to last line of the display above [Note that in the last line, I rename things.  This renaming, interestingly, can cause some difficulty in interpretation; we understand the terms in the second to last line, but the renaming in the last line renames and strips the terms of their probabilistic meaning (along with removing information about what is being conditioned upon), which can lead to misuse].  It is worth noting that test interpretation would be much better if there were databases kept such that we could just estimate $p(dz+|test-,sx, \text{ other variables})$ directly, rather than having to use this equation. This type  of modeling does not occur usually because each model would be specific to time and location, at least.  This sounds like a daunting task, therefore, to fit all of these models, but the reality is that if this is not done that way, it has to be done another way --- it just shifts the responsibility of interpretation from the test manufacturer or some organization with appropriate expertise onto the person using the test.  
+If we can fill in the pieces of this equation, we can provide an estimate of the left hand side.  Note that in the last line, I rename probabilities as sens=sensitivity and spec=specificity.  This renaming, interestingly, can cause some difficulty; we understand the terms in the second to last line, but the renaming in the last line renames and strips the terms of their probabilistic meaning (along with removing information about what is being conditioned upon), which can lead to misuse, and may be related to the persistance of the framework for test interpreation that gives so many issues below [@moons2003sensitivity].  It is worth noting that test interpretation might be much better if there were databases kept such that we could just estimate $p(dz+|test-, \text{ other variables})$ directly, rather than having to use Bayes rule. This type  of modeling does not occur usually because each model would be specific to time and location, at least.  This sounds like a daunting task, therefore, to fit all of these models, but the reality is that if this is not done that way, it has to be done another way --- it just shifts the responsibility of interpretation from the test manufacturer or some organization with appropriate expertise onto the person using the test, and we are left with nothing but the equation above, as far as I know.  
 
-So, we have no choice - let's try to interpret a negative test.
+Here, I am going to use this equation to calculate the post-test probability given a negative test for a battery of rapid antigen tests. Consider numbers from the recent meta-analysis [@bruemmer2021accuracy]. Note that these estimates, as far as I know, condition on nothing except the test result [and adult status? read more carefully] (I do not know how they would otherwise pool so many estimates).   We assume that the studies used to obtain the sensitivities and specificities had a reasonable design, which is not always the case.  
 
-
-## Study design:
-
-We first need to fill in the pieces of the right hand side of the equation above.  We might look to a study for this purpose, but the validity of the estimates depend on the study design.  Accoring to [@CM], a retrospective case-control is most appropriate.  I am assuming in this case that we let the disease status be the outcome.  I however need to think about this more; perhaps if [@prince2021evaluation] does not fit this design, there may be issues with the approach I take below. Below, when I talk a bit about what would be "ideal,"  the idea is to record information on people as they test. I think this amounts to a retrospective case-control.  
-
-Aside: note that, just focusing on $p(dz+|test,sx),$  we are really interested in the test effect. Let us therefore consider how this would be estimated in general.  First, if the data is observational and there is an unmeasured variable that affects whether someone takes a test and also whether they have the disease (confounding), the effect estimate may be incorrect. Generally, we would condition on the confounder to remove this issue. I am still trying to think more about how this relates to the discussion below on conditioning on the necessary set of variables. I think it is different, since we can defend a marginal (non-conditioned) post-test probability, if it is tailored enough to our covaraites to inform decision-making, but we can't really defend an unadjusted estimate of, e.g., a treatment effect.  This actually seems to be the tension here.  In some cases, marginal, $p(dz+|test-)$,  is good enough, even though ideally we would have conditional $p(dz+|test-,age,sex,location,time,incubation,\dots)$.  Especially, marginal is good enough if somehow the variables we do not condition on in the marginal estimate sort of cancel each other out.
-
-## Estimates from [@prince2021evaluation]:
-
-Assuming that the study design of [@prince2021evaluation] allows for valid estimation, we can use their point estimates and 95% confidence intervals for
-
-$$
-p(test+|dz+,sx+,ad+) \approx 0.64 \ (0.57,0.71)
-$$
-and
-$$
-p(test+|dz+,sx-,ad+) \approx 0.36 \ (0.27,0.45).
-$$
-
-Also,
-
-$$
-p(dz-|test-,sx-,ad+)\approx 1 (.99,1)
-$$
-and
-$$
-p(dz-|test-,sx+,ad+)\approx 1 (1,1).
-$$
-
-We can then plug these estimates into the equation above, and obtain a post-test probability, right? 
-
-## Issues with the standard calculation:
-
-Not so fast. If we define $x=(sx,ad),$ we see that it is a somewhat limited set.  For example, we were originally interested in the post-test probability given a sustained exposure.  Note,
-$$
-\begin{aligned}
-p(dz+|test-,x)&=p(dz+|test-,x,exp+)p(exp+|test-,x)+p(dz+|test-,x,exp-)p(exp-|test-,x)\\&=\alpha p(dz+|test-,x,exp+) + (1-\alpha)p(dz+|test-,x,exp-)
-\end{aligned}
-$$
-where $\alpha\in [0,1].$
-
-Hence, the probability of $p(dz+|test-,x)$ that we computed above is somewhere in between what we really want to know, $p(dz+|test-,x,exp+),$ and the $p(dz+|test-,x,exp-),$ which is the probability under no sustained exposure. This may appear to not be a big deal. However, consider now what happens in the situation where instead of exposure, we did not measure symptom status:
-$$
-p(dz+|test-) = (dz+|test-,sx+)p(sx+|test-)+p(dz+|test-,sx-)p(sx-|test-).
-$$
-According to [@prince2021evaluation], however, the presence of symptoms matters.  Hence, if we blindly compute the left hand side above, we will be estimating our post test probability ignoring symptoms, and therefore underestimate our risk. With the equation above, this is very clear that this should be the case.  However, the mechanical use of Bayes rule to estimate post-test probability often leads us to ignore this fact, surprisingly.  The same would be true for ignoring exposure; it may be the case that exposure is even more important than symptoms.  This may also not be the case.  Maybe, knowing that symptoms is more important than exposure, we can safely ignore exposure. Only gathering the appropriate data can tell us what is appropriate.
-
-# Bound:
-
-The following section is just some musings on possibly being able to make a statement like "disease probabilty is greater than this value, even though we know it is not this value precisely." We can say, for example, $p(dz+|test-)\leq p(dz+|test-,exposure+),$ which is based on the fact that a sustained exposure increases probability of disease. 
-
-We can also somewhat more circuitously write
-
-$$
-p(dz+|test-,sx,ad,exposure + )=\frac{p(exposure+|test-,dz+,sx,ad)}{p(exposure+|test-,sx,ad)}p(dz+|sx,ad,test-)
-$$
-
-We see that if
-
-$$
-\frac{p(exposure+|test-,dz+,sx,ad)}{p(exposure+|test-,sx,ad)}>1,
-$$
-
-which is the case when the event “exposure” increases the probability of the disease (I assume this is true), then
-
-$$
-p(dz+|sx,ad,test-),
-$$
-
-which we can obtain from [@prince2021evaluation], is a lower bound on
-
-$$
-p(dz+|exposure+,sx,ad,test-).
-$$
-
-So, even though the estimates in [@prince2021evaluation] do not apply to our situation directly, if we were to assume that other variables, besides those concerning age cutoff, symptom status, test result, and exposure, are negligible, our post-test probability estimate can still be considered a lower bound, which still gives us some information, and also shows us, even with our strong assumptions, how little we actually know.
-
-## Other variables that might be relevant:
-
-As I said above, we can only know how good or bad our current estimates are by collecting more data.  However, one can also use previous studies to detect variables that might be relevant, but are ignored.  I am concerned with the omission of gender, which appears to be possibly correlated with viral load [@mahallawi2021association], assuming viral load and antigen presence are essentially the same. I think age should be treated as a continuous variable. It seems that age should correlate with viral load; this was not supported by Mahallawi, but it might be supported by [@euser2021sars]. We need to condition on anything that leads to different antigen levels in different people. If the antigens are excreted or metabolized, we would need to take into account liver and kidney status. Of course, this should depend on immune system function, which will vary along with comorbidities and medications. Antigen level also probably depends on the covid strain.  It appears that Table 2 in  [@prince2021evaluation] provides some interesting information that can help us here (there are counts of eg false positive and negative rates conditioned on sex, ethnicity, etc; unfortunately not jointly - I will have to look for the raw data). I am just eyeballing it, and it appears that the percentage of FN differs by sex, ethnicity, race, age, symptoms, days from symptom onset, and known exposure (!!).  
-
-I am also unsure how one should estimate $p(dz+|sx,ad).$ We can get this for the [@prince2021evaluation] cohort, but this depends on things like location, time of year, and lockdown status. Some of these have changed a lot since the study was conducted.  One can avoid having to think about the latter if things are done with updated, location-specific databases, as mentioned above.  It really should not be the responsibility of the test taker to think about the pretest probability, especially because it depends on the covariates chosen in the study that evaluates the test. It is unreasonable to expect that someone can guess, without data, the value of their conditional pre-test probability.
-
-## Weakening the assumption of negligibility:
-
-I said before that possibly if the variables we do not condition on have equally opposing effect, we may be able to ignore them. This could allow us to relax the assumption that these variables are negligible.  We really though have to gather data to see if this is the case.
-
-## Implementation, assuming negligibility and proper estimates, under varying pre-test probabilities:
-
-Here, I am going to calculate the post-test probability given a negative test for the BINAX Now rapid antigen test under the assumption that the variables not conditioned upon in the [@prince2021evaluation] are  negligible, either in effect or in total effect, and that the study had a reasonable design.  I am going to show my code to promote transparency and reproducibiity.  
-
-You can find the notebook in my GitHub; you are free to use and modify this code as long as you allow others to use and modify your modification of this code.
+I am going to show my code to promote transparency and reproducibility.  You can find the notebook in my GitHub; use at your own risk. You are free to use and modify this code as long as you allow others to use and modify your modification of this code.
 
 We start with the likelihood ratio. Recall from above that
 
 $$
 \begin{aligned}
-p(dz+|test-,sx)=\frac{1-sens}{spec(1-pretest)+(1-sens)pretest}pretest
+p(dz+|test-)=\frac{1-sens}{spec(1-pretest)+(1-sens)pretest}pretest
 \end{aligned}
 $$
 
-Note that this implies that higher sensitivity will increase post-test probability of the disease being present and higher specificity will decrease post-test probability.  Hence, our lower bound on post-test probability will use the upper confidence bound of sensitivity and the lower confidence bound of specificity and vice versa for the upper bound on post-test probability.
+Note that this implies that higher sensitivity will increase post-test probability of the disease being present given a negative test and higher specificity will decrease post-test probability.  Hence, our lower bound on post-test probability will use the upper confidence bound of sensitivity and the lower confidence bound of specificity (and vice versa for the upper bound on post-test probability).
+
 
 ```{r }
 like.rat=function(sens,spec,pretest){(1-sens)/((1-sens)*pretest+(spec)*(1-pretest))}
@@ -167,7 +59,7 @@ post.test.prob = function(sens,spec,pretest){
 }
 ```
 
-Let us compute the post-test probability over a grid of pre.tests.
+Let us compute the post-test probability over a grid of pre-test probabilities.
 
 ```{r }
 pre.tests = seq(0,1,0.01)
@@ -180,16 +72,7 @@ post.tests
 }
 ```
 
-We have, recall, from [@prince2021evaluation], 
-$$
- p(test+|dz+,sx+,ad+)\approx 0.64 (0.57,0.71)
-$$
- and
- 
-$$
-p(test+|dz+,sz-,ad+) \approx 0.36 (0.27,0.45).
-$$
-Now just plot
+Now create a function to plot
 
 ```{r }
 
@@ -217,6 +100,11 @@ for (i in 1:nl){
 lines(pre.tests,lns[[i]]$m,lty=1,lwd=lwd.point,col=colorBlindBlack8[i])
 lines(pre.tests,lns[[i]]$u,lty=2,col=colorBlindBlack8[i])
 lines(pre.tests,lns[[i]]$l,lty=2,col=colorBlindBlack8[i])  
+
+#rgbval = paste(as.vector(col2rgb(colorBlindBlack8[i])), collapse = " ")
+#lines(pre.tests,lns[[i]]$u,lty=2,col=rgb(rgbval[1],rgbval[2],rgbval[3]))
+#lines(pre.tests,lns[[i]]$l,lty=2,col=rgb(rgbval[1],rgbval[2],rgbval[3]))
+
 }
 
 
@@ -225,44 +113,7 @@ legend("topleft",legend=leg.labels,bg='white',
 }
 ```
 
-
-```{r }
-post.tests.6=get.post.tests(sens=0.64,spec=1,pre.tests)
-post.tests.6l=get.post.tests(sens=0.57,spec=1,pre.tests)
-post.tests.6u=get.post.tests(sens=0.71,spec=1,pre.tests)
-
-l.6 = list(m=post.tests.6,l=post.tests.6l,u=post.tests.6u)
-
-post.tests.36=get.post.tests(sens=0.36,spec=1,pre.tests)
-post.tests.36u = get.post.tests(sens=.45,spec=.99,pre.tests)
-#post.tests.36l = get.post.tests(sens=.27, spec=1,pre.tests)
-post.tests.36l = get.post.tests(sens=.27, spec=1,pre.tests)
-
-l.36 = list(m=post.tests.36,l=post.tests.36l,u=post.tests.36u)
-
-# Prince-Guerra 2021
-
-lns = list(l.6,l.36)
-
-
-plot.p(lns,
-       post.label="Lower Bound Post-test: p(dz+|test-,sx,ad)",xlab="Pre-test: p(dz+|sx,ad)",
-       leg.labels=c(TeX("sx+,adult+"),TeX("sx-,adult+")),main="Prince-Guerra, 2021"
-       )
-
-```
-
-Now consider numbers from the recent meta-analysis [@bruemmer2021accuracy]. Note that these estimates, as far as I know, condition on nothing except the test result [and adult status? read more carefully] (I do not know how they would otherwise pool so many estimates).  Hence, we have pre-test as 
-$$
-p(dz+)
-$$
-
-and post-test as 
-
-$$
-p(dz+|test-).
-$$
-
+ 
 Here I have converted the table from [@bruemmer2021accuracy] into a list.  
 
 ```{r }
@@ -331,7 +182,7 @@ StandardQnasal =  list(
 )
 ```
 
-We will plot the tests in threes, just so the plot is not too cluttered.
+We will plot now the post test probabilities for each test as a function of the pretest probability and the operating characteristics above.  Note that these plots may be falsely comforting.  First, how do we specify the pretest probability?  It's not necessarily prevalence, because prevalence is conditional  upon  location and time, which are conditional upon the geographic and temporal characteristics of the population.  However, the sensitivity and specificity estimates do not account for these things.  Second, as I will discuss below, assuming I can specify a reasonable pretest probability, what if there are things about me that are important to take into consideration?  I discuss exposure below, but how about symptom status, variant, time since symptom onset, etc?   *You cannot simply change your pretest accordingly; sensitivity and specificity must also be updated.* To see this, look back at the derivation above, or read the diagnosis chapter in [@BBR].  
 
 ```{r }
 get.t.posts = function(tests){
@@ -347,21 +198,136 @@ for(t in tests){
 test.posts
 }
 
-ms=c(seq(1,12,3),12)
-ls = length(ms)
-#par(mfrow=c(2,2))
-for (k in 1:(ls-1)){
-en=ms[k+1]-1
-if(k==4){
-  en=12
-}
-test.posts = get.t.posts(tests[ms[k]:en])
+#par(mfrow=c(12,1))
+for (k in 1:12){
+test.posts = get.t.posts(tests[k])
 plot.p(test.posts,
        post.label="Post-test: p(dz+|test-)",xlab="Pre-test: p(dz+)",
        leg.labels=names(test.posts),main=""
        )
 }
 ```
+
+
+## Conditional post-test probability estimates
+
+
+Note, again that these post-test estimates, do not take into account the extra variable that we call “exposure.” Before thinking about exposure, let us consider a different variable: symptoms.
+
+Note:
+
+$$
+\begin{aligned}
+p(dz+|test-,sx)&=\frac{p(test-|dz+,sx)}{p(test-|sx)}p(dz+|sx)\\
+&=\frac{1-p(test+|dz+,sx)}{p(test-|dz-,sx)p(dz-|sx)+p(test-|dz+,sx)p(dz+|sx)}p(dz+|sx)\\
+&=\frac{1-sens}{spec(1-pretest)+(1-sens)pretest}pretest
+\end{aligned}
+$$
+
+
+
+
+## Study design:
+
+We first need to fill in the pieces of the right hand side of the equation above.  We might look to a study for this purpose, but the validity of the estimates depend on the study design.  Accoring to [@CM], a retrospective case-control is most appropriate.  I am assuming in this case that we let the disease status be the outcome. 
+
+Aside: note that, just focusing on $p(dz+|test,sx),$  we are really interested in the test effect. Let us therefore consider how this would be estimated in general.  First, if the data is observational and there is an unmeasured variable that affects whether someone takes a test and also whether they have the disease (confounding), the effect estimate may be incorrect. Generally, we would condition on the confounder to remove this issue. I am still trying to think more about how this relates to the discussion below on conditioning on the necessary set of variables. I think it is different, since we can defend a marginal (non-conditioned) post-test probability, if it is tailored enough to our covaraites to inform decision-making, but we can't really defend an unadjusted estimate of, e.g., a treatment effect.  This actually seems to be the tension here.  In some cases, marginal, $p(dz+|test-)$,  is good enough, even though ideally we would have conditional $p(dz+|test-,age,sex,location,time,incubation,\dots)$.  Especially, marginal is good enough if somehow the variables we do not condition on in the marginal estimate sort of cancel each other out.
+
+## Estimates from [@prince2021evaluation]:
+
+Define sx=symptoms, ad = adult, and dz=disease (covid-19). I am including symptom status and "adult" as done in [@prince2021evaluation], but this is more for the sake of illustration than to give an accurate estimate.  I will also include some charts from a more recent meta-analysis below.  Assuming that the study design of [@prince2021evaluation] allows for valid estimation, we can use their point estimates and 95% confidence intervals for
+
+$$
+p(test+|dz+,sx+,ad+) \approx 0.64 \ (0.57,0.71)
+$$
+and
+$$
+p(test+|dz+,sx-,ad+) \approx 0.36 \ (0.27,0.45).
+$$
+
+Also,
+
+$$
+p(dz-|test-,sx-,ad+)\approx 1 (.99,1)
+$$
+and
+$$
+p(dz-|test-,sx+,ad+)\approx 1 (1,1).
+$$
+
+We can then plug these estimates into the equation above, and obtain a post-test probability, right? 
+
+## Issues with the standard calculation:
+
+Not so fast. If we define $x=(sx,ad),$ we see that it is a somewhat limited set.  For example, we were originally interested in the post-test probability given a sustained exposure.  Note,
+$$
+\begin{aligned}
+p(dz+|test-,x)&=p(dz+|test-,x,exp+)p(exp+|test-,x)+p(dz+|test-,x,exp-)p(exp-|test-,x)\\&=\alpha p(dz+|test-,x,exp+) + (1-\alpha)p(dz+|test-,x,exp-)
+\end{aligned}
+$$
+where $\alpha\in [0,1].$
+
+Hence, the probability of $p(dz+|test-,x)$ that we computed above is somewhere in between what we really want to know, $p(dz+|test-,x,exp+),$ and the $p(dz+|test-,x,exp-),$ which is the probability under no sustained exposure. This may appear to not be a big deal. However, consider now what happens in the situation where instead of exposure, we did not measure symptom status:
+$$
+p(dz+|test-) = (dz+|test-,sx+)p(sx+|test-)+p(dz+|test-,sx-)p(sx-|test-).
+$$
+According to [@prince2021evaluation], however, the presence of symptoms matters.  Hence, if we blindly compute the left hand side above, we will be estimating our post test probability ignoring symptoms, and therefore underestimate our risk. With the equation above, this is very clear that this should be the case.  However, the mechanical use of Bayes rule to estimate post-test probability often leads us to ignore this fact, surprisingly.  The same would be true for ignoring exposure; it may be the case that exposure is even more important than symptoms.  This may also not be the case.  Maybe, knowing that symptoms is more important than exposure, we can safely ignore exposure. Only gathering the appropriate data can tell us what is appropriate.
+
+# Bound:
+
+The following section is just some musings on possibly being able to make a statement like "disease probabilty is greater than this value, even though we know it is not this value precisely." We can say, for example, $p(dz+|test-)\leq p(dz+|test-,exposure+),$ which is based on the fact that a sustained exposure increases probability of disease. See appendix (A) for more discussion.
+
+So, even though the estimates in [@prince2021evaluation] do not apply to our situation directly, if we were to assume that other variables, besides those concerning age cutoff, symptom status, test result, and exposure, are negligible, our post-test probability estimate can still be considered a lower bound, which still gives us some information, and also shows us, even with our strong assumptions, how little we actually know.
+
+## Other variables that might be relevant:
+
+As I said above, we can only know how good or bad our current estimates are by collecting more data.  However, one can also use previous studies to detect variables that might be relevant, but are ignored.  I am concerned with the omission of gender, which appears to be possibly correlated with viral load [@mahallawi2021association], assuming viral load and antigen presence are essentially the same. I think age should be treated as a continuous variable. It seems that age should correlate with viral load; this was not supported by Mahallawi, but it might be supported by [@euser2021sars]. We need to condition on anything that leads to different antigen levels in different people. If the antigens are excreted or metabolized, we would need to take into account liver and kidney status. Of course, this should depend on immune system function, which will vary along with comorbidities and medications. Antigen level also probably depends on the covid strain.  It appears that Table 2 in  [@prince2021evaluation] provides some interesting information that can help us here (there are counts of eg false positive and negative rates conditioned on sex, ethnicity, etc; unfortunately not jointly - I will have to look for the raw data). I am just eyeballing it, and it appears that the percentage of FN differs by sex, ethnicity, race, age, symptoms, days from symptom onset, and known exposure (!!).  
+
+I am also unsure how one should estimate $p(dz+|sx,ad).$ We can get this for the [@prince2021evaluation] cohort, but this depends on things like location, time of year, and lockdown status. Some of these have changed a lot since the study was conducted.  One can avoid having to think about the latter if things are done with updated, location-specific databases, as mentioned above.  It really should not be the responsibility of the test taker to think about the pretest probability, especially because it depends on the covariates chosen in the study that evaluates the test. It is unreasonable to expect that someone can guess, without data, the value of their conditional pre-test probability.
+
+## Weakening the assumption of negligibility:
+
+I said before that possibly if the variables we do not condition on have equally opposing effect, we may be able to ignore them. This could allow us to relax the assumption that these variables are negligible.  We really though have to gather data to see if this is the case.
+
+
+## Conditional
+
+We have, recall, from [@prince2021evaluation], 
+$$
+ p(test+|dz+,sx+,ad+)\approx 0.64 (0.57,0.71)
+$$
+ and
+ 
+$$
+p(test+|dz+,sz-,ad+) \approx 0.36 (0.27,0.45).
+$$
+
+```{r }
+post.tests.6=get.post.tests(sens=0.64,spec=1,pre.tests)
+post.tests.6l=get.post.tests(sens=0.57,spec=1,pre.tests)
+post.tests.6u=get.post.tests(sens=0.71,spec=1,pre.tests)
+
+l.6 = list(m=post.tests.6,l=post.tests.6l,u=post.tests.6u)
+
+post.tests.36=get.post.tests(sens=0.36,spec=1,pre.tests)
+post.tests.36u = get.post.tests(sens=.45,spec=.99,pre.tests)
+#post.tests.36l = get.post.tests(sens=.27, spec=1,pre.tests)
+post.tests.36l = get.post.tests(sens=.27, spec=1,pre.tests)
+
+l.36 = list(m=post.tests.36,l=post.tests.36l,u=post.tests.36u)
+
+# Prince-Guerra 2021
+
+lns = list(l.6,l.36)
+
+
+plot.p(lns,
+       post.label="Lower Bound Post-test: p(dz+|test-,sx,ad)",xlab="Pre-test: p(dz+|sx,ad)",
+       leg.labels=c(TeX("sx+,adult+"),TeX("sx-,adult+")),main="Prince-Guerra, 2021"
+       )
+
+```
+
 
 We can compare $p(dz+|test-,sx,adult)$ from [@prince2021evaluation] with $p(dz|test-)$ from [@bruemmer2021accuracy].
 
@@ -399,24 +365,32 @@ expit=function(x){exp(x)/(1+exp(x))}
 plot(-10:10,expit(-10:10))
 ```
 
-Set the sample size.
+Set the seed and sample size.
 ```{r }
 set.seed(1)
-n=10000
+n=50000
 ```
 
 Set prevalence, $pdz.$ 
 ```{r }
-pdz=.1
+pdz=.2
 ```
 
-Let $dz\sim Bern(pdz), sx\sim Bern(expit(-2+(2+2)dz)),$ so we generally don't have symptoms unless disease is present. Let $ts\sim Bern(expit(-3+(3+2.5)dz+2.5(sx)(dz))),$ so we tend not to have positive tests unless there is disease, and the presence of symptoms along with the disease increases the probability greatly.
+Let $dz\sim Bern(pdz), sx\sim Bern(expit(-2+(2+2)dz)),$ so we generally don't have symptoms unless disease is present. Let $ts\sim Bern(expit(-3+(3+0.5)dz+1.5(sx)(dz))),$ so we tend not to have positive tests unless there is disease, and the presence of symptoms along with the disease increases the probability.
 ```{r }
 dz = rbinom(n,1,pdz)
 sx=rbinom(n,1,expit(-2+(2+2)*dz))
 #antigen = rnorm(n,mean=-3+sx*.1+dz*1) #todo: explore cutoff
-ts = rbinom(n,1,expit(-3+(2+1.5)*dz+1.5*sx*dz))
+ts = rbinom(n,1,expit(-3+(3+0.5)*dz+1.5*sx*dz))
 df = data.frame(dz=dz,sx=sx,ts=ts)
+```
+
+```{r }
+print(c("p(dz+)",pdz))
+pdzpsxn = dim(df[(df$dz==1)&(df$sx==0),])[1]/dim(df[(df$sx==0),])[1]
+pdzpsxp = dim(df[(df$dz==1)&(df$sx==1),])[1]/dim(df[(df$sx==1),])[1]
+print(c("p(dz+|sx-)",pdzpsxn))
+print(c("p(dz+|sx+)",pdzpsxp))
 ```
 
 Calculate the marginal sensitivity and specificity
@@ -424,27 +398,34 @@ Calculate the marginal sensitivity and specificity
 ```{r }
 ptspdzp=dim(df[(df$dz==1)&(df$ts==1),])[1]/dim(df[(df$dz==1),])[1]
 ptsndzn=dim(df[(df$dz==0)&(df$ts==0),])[1]/dim(df[(df$dz==0),])[1]
-print(c("marg sens",round(ptspdzp,2)))
-print(c("marg spec",round(ptsndzn,2)))
+print(c("marg sens: p(test+|dz+)",round(ptspdzp,2)))
+print(c("marg spec: p(test-|dz-)",round(ptsndzn,2)))
+pdzptsn = dim(df[(df$dz==1)&(df$ts==0),])[1]/dim(df[(df$ts==0),])[1]
+print(c("p(dz+|test-)",pdzptsn))
 ```
 
 Calculate the conditional sensitivities and specificities.  First, given symptoms 
 ```{r }
 ptspdzpsxp = dim(df[(df$ts==1)&(df$dz==1)&(df$sx==1),])[1]/dim(df[(df$dz==1)&(df$sx==1),])[1]
 ptsndznsxp = dim(df[(df$ts==0)&(df$dz==0)&(df$sx==1),])[1]/dim(df[(df$dz==0)&(df$sx==1),])[1]
-print(c("Cond sens, sx-",round(ptspdzpsxp,2)))
-print(c("Cond sens, sx-",round(ptsndznsxp,2)))
+print(c("Cond sens, sx-: p(test+|dz+,sx+)",round(ptspdzpsxp,2)))
+print(c("Cond sens, sx-:p(test-|dz-,sx+)",round(ptsndznsxp,2)))
+pdzptsnsxp = dim(df[(df$ts==0)&(df$dz==1)&(df$sx==1),])[1]/dim(df[(df$ts==0)&(df$sx==1),])[1]
+print(c("p(dz+|test-,sx+)",pdzptsnsxp))
+
 ```
 
 Now no symptoms
 ```{r }
 ptspdzpsxn = dim(df[(df$ts==1)&(df$dz==1)&(df$sx==0),])[1]/dim(df[(df$dz==1)&(df$sx==0),])[1]
 ptsndznsxn = dim(df[(df$ts==0)&(df$dz==0)&(df$sx==0),])[1]/dim(df[(df$dz==0)&(df$sx==0),])[1]
-print(c("Cond spec, sx+",round(ptspdzpsxn,2)))
-print(c("Cond spec, sx+",round(ptsndznsxn,2)))
+print(c("Cond spec, sx+: p(test+|dz+,sx-)",round(ptspdzpsxn,2)))
+print(c("Cond spec, sx+: p(test+|dz-,sx-)",round(ptsndznsxn,2)))
+pdzptsnsxn = dim(df[(df$ts==0)&(df$dz==1)&(df$sx==0),])[1]/dim(df[(df$ts==0)&(df$sx==0),])[1]
+print(c("p(dz+|test-,sx-)",pdzptsnsxn))
 ```
 
-Now look at $\alpha$
+Now look at $P(sx|ts)$
 ```{r }
 psxptsn = dim(df[(df$sx==1)&(df$ts==0),])[1]/dim(df[(df$ts==0),])[1]
 psxntsn = dim(df[(df$sx==0)&(df$ts==0),])[1]/dim(df[(df$ts==0),])[1]
@@ -452,7 +433,24 @@ print(c("P(sx+|test-)",round(psxptsn,2)))
 print(c("P(sx-|test-)",round(psxntsn,2)))
 ```
 
-It seems that it must favor the asymptomatic conditional.  What is going on here?
+
+
+It seems that it must favor the asymptomatic conditional.  What is going on here? Let's check everything.
+
+```{r }
+print(c("p(dz+|test-)",pdzptsn))
+print(c("p(dz+|test-,sx+)p(sx+|test-)+p(dz+|test-,sx-)p(sx-|test-)",pdzptsnsxp*psxptsn + pdzptsnsxn*psxntsn))
+
+print(c("p(dz+|test-,sx+)",pdzptsnsxp))
+print(c("p(dz+|test-,sx+)",get.post.tests(sens=ptspdzpsxp,spec=ptsndznsxp,pre.tests=c(pdzpsxp))))
+#get.post.tests()
+
+print(c("p(dz+|test-,sx-)",pdzptsnsxn))
+print(c("p(dz+|test-,sx-)",get.post.tests(sens=ptspdzpsxn,spec=ptsndznsxn,pre.tests=c(pdzpsxn))))
+
+#cbind(pts$`Conditional sx+`$m,pts$`Conditional sx-`$m,pts$Marginal$m,pre.tests)[21,]
+#cbind(pdzptsnsxp,pdzptsnsxn)
+```
 
 ```{r }
 tests=list(
@@ -481,7 +479,10 @@ plot.p(pts,
        )
 
 ```
-
+```{r }
+cbind(pts$`Conditional sx+`$m*psxptsn + pts$`Conditional sx-`$m*psxntsn,
+pts$Marginal$m)
+```
 Again, this is contrary to my expectation. Maybe there is a bug in the code.  I am pretty sure the following probability statement, copied from above, is not wrong...
 
 $$
@@ -534,5 +535,33 @@ Code: \url{https://github.com/samuelweisenthal/BinaxNOWpostTestProb}
 
 
 I appreciated comments and encouragement from the datamethods \url{https://discourse.datamethods.org/t/determining-post-test-probability-of-covid-19/4723/12} forum participants (epiMD5,trumanfrancis), Anna Park, and my brother on this topic. Please, if you have any comments, let me know!
+
+## Appendix
+
+(A)
+We can also somewhat more circuitously write
+
+$$
+p(dz+|test-,sx,ad,exposure + )=\frac{p(exposure+|test-,dz+,sx,ad)}{p(exposure+|test-,sx,ad)}p(dz+|sx,ad,test-)
+$$
+
+We see that if
+
+$$
+\frac{p(exposure+|test-,dz+,sx,ad)}{p(exposure+|test-,sx,ad)}>1,
+$$
+
+which is the case when the event “exposure” increases the probability of the disease (I assume this is true), then
+
+$$
+p(dz+|sx,ad,test-),
+$$
+
+which we can obtain from [@prince2021evaluation], is a lower bound on
+
+$$
+p(dz+|exposure+,sx,ad,test-).
+$$
+
 
 # References
