@@ -175,8 +175,6 @@ StandardQnasal =  list(
 )
 ```
 
-We will plot now the post test probabilities for each test as a function of the pretest probability and the operating characteristics above.  Note that these plots may be falsely comforting.  First, how do we specify the pretest probability?  It's not necessarily prevalence, because prevalence is conditional  upon  location and time, which are conditional upon the geographic and temporal characteristics of the population.  However, the sensitivity and specificity estimates do not account for these things.  Second, as I will discuss below, assuming I can specify a reasonable pretest probability, what if there are things about me that are important to take into consideration?  I discuss exposure below, but how about symptom status, variant, time since symptom onset, etc?   *You cannot simply change your pretest accordingly; sensitivity and specificity must also be updated.* To see this, look back at the derivation above, or read the diagnosis chapter in [@BBR].  
-
 We want to take into account the uncertainty in the estimates above.  We need to choose which values of sensitivity and specificity will be used for the confidence bounds. I am pretty sure I am correct about sensitivity here.  I am not sure about specificity, but there is very little variation in specificity over the tests anyway. Recall from above that
 
 $$
@@ -207,6 +205,10 @@ for(t in tests){
 test.posts
 }
 ```
+
+
+We will plot now the post test probabilities for each test as a function of the pretest probability and the operating characteristics above.  Note that these plots may be falsely comforting.  First, how do we specify the pretest probability?  It's not necessarily prevalence, because prevalence is conditional  upon  location and time, which are conditional upon the geographic and temporal characteristics of the population.  However, the sensitivity and specificity estimates do not account for these things.  Second, as I will discuss below, assuming I can specify a reasonable pretest probability, what if there are things about me that are important to take into consideration?  I discuss exposure below, but how about symptom status, variant, time since symptom onset, etc?   *You cannot simply change your pretest accordingly; sensitivity and specificity must also be updated.* To see this, look back at the derivation above, or read the diagnosis chapter in [@BBR].  
+
 
 ```{r }
 
