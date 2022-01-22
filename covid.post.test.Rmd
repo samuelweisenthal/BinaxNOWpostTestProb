@@ -13,11 +13,13 @@ knitr::opts_chunk$set(echo = TRUE)
 
 # Summary:
 
-Tests are crucial for controlling the covid-19 pandemic. Test result interpretation is also important. For example, a test could be negative, but covid-19 might still be present.  After getting a negative rapid antigen test a few months ago, I tried to interpret the result using a standard approach to calculate post-test probability.  This was not easy. Difficulties included specifying my pretest probability and getting appropriate estimates for the test operating characteristics. Beware of the trap: your pretest probability cannot depend on variables that are different from the ones collected in the study that evaluated the test.  (See also the diagnosis chapter in http://hbiostat.org/doc/bbr.pdf.)  This trap is particularly problematic when you have reason to believe that certain variables, such as symptom status or exposure, make it more likely that you have the disease at baseline. I found this to be a hard problem, based mostly on the indirect way in which I had to go about it.  There may be ways to shift the burden of test interpretation from the person taking the test to statistical analysts who have appropriate tools and databases.  One way might be to maintain publicly available models that are specific to location and time, as well as other covariates of the test taker, and perhaps allow people to go to a website to enter their information  into these models.
+Tests are crucial for controlling the covid-19 pandemic. Test result interpretation is also important. For example, a test could be negative, but covid-19 might still be present.  After getting a negative rapid antigen test a few months ago, I tried to use a standard approach to calculate post-test probability.  This was not easy.  I recorded my efforts at https://discourse.datamethods.org/t/determining-post-test-probability-of-covid-19/4723/12, and I have tried to collect my most updated thoughts at https://github.com/samuelweisenthal/BinaxNOWpostTestProb/blob/main/covid.post.test.pdf. Difficulties included specifying my pretest probability and getting appropriate estimates for the test operating characteristics. Beware of the trap: your pretest probability cannot depend on variables that are different from the ones collected in the study that evaluated the test.  (See also the diagnosis chapter in http://hbiostat.org/doc/bbr.pdf.)  This trap is particularly problematic when you have reason to believe that certain variables, such as symptom status or exposure, make it more likely that you have the disease at baseline. I found this to be a hard problem, based mostly on the indirect way in which I had to go about it.  There may be ways to make the entire process more direct, shifting the burden of test interpretation from the person taking the test to statistical analysts who have appropriate tools and databases.  One way might be to maintain websites with publicly available data (de-identified) and models that are specific to location and time, as well as other important covariates.  In this case, someone would just need to go to a website and enter their information to get a test interpretation.
 
 # Background 
 
-Some months ago, I wanted to, given what I had available, try to determine the post-test probability of covid-19 in a person who had a negative Binax NOW rapid antigen test after a sustained, unmasked exposure. Originally, I hoped we could apply Bayes rule to some estimates from the literature.  It turns out to be more complicated.  To begin this document, I will consider the easier problem of estimating post-test probability given a negative test only, with no exposure.  In other words, let us forget about the conditional post-test probability,  $p(dz+|test-,exposure),$, and consider the "marginal" $p(dz+|test-)$ (this is almost always done, unfortunately, when we talk about post-test probabilities). We  have 
+Some months ago, I wanted to, given what I had available, try to determine my post-test probability of covid-19 after a negative Binax NOW rapid antigen test and a sustained, unmasked exposure. Originally, I hoped we could apply Bayes rule to some estimates from the literature.  It turns out to be more complicated.  
+
+To begin this document, I will consider the easier problem of estimating post-test probability given a negative test only, with no exposure.  In other words, let us forget about the conditional post-test probability,  $p(dz+|test-,exposure),$, and consider the "marginal" $p(dz+|test-)$ (this is almost always done, unfortunately, when we talk about post-test probabilities). We  have 
 
 $$
 \begin{aligned}
@@ -260,10 +262,9 @@ I am also unsure how one should estimate $p(dz+|sx,ad).$ We can get this for the
 
 ## Weakening the assumption of negligibility:
 
-I said before that possibly if the variables we do not condition on have equally opposing effect, we may be able to ignore them. This could allow us to relax the assumption that these variables are not necessary to adjust for  We really though have to gather data to see if this is the case.
+I said before that possibly if the variables we do not condition on have equally opposing effect, we may be able to ignore them. This could allow us to relax the assumption that these variables are not necessary to adjust for.  We really though have to gather data to see if this is the case.
 
-
-## Conditional
+Let us look at whether symptom status is reasonable to marginalize.
 
 
 ```{r }
@@ -439,8 +440,8 @@ plot.p(pts,
 
 ```
 ```{r }
-cbind(pts$`Conditional sx+`$m*psxptsn + pts$`Conditional sx-`$m*psxntsn,
-pts$Marginal$m)
+#cbind(pts$`Conditional sx+`$m*psxptsn + pts$`Conditional sx-`$m*psxntsn,
+#pts$Marginal$m)
 ```
 Again, this is contrary to my expectation. Maybe there is a bug in the code.  I am pretty sure the following probability statement, copied from above, is not wrong...
 
@@ -484,17 +485,6 @@ p(dz+|exposure+,sx,ad,test-).
 $$
 
 So, even though the estimates in [@prince2021evaluation] do not apply to our situation directly, if we were to assume that other variables, besides those concerning age cutoff, symptom status, test result, and exposure, are negligible, our post-test probability estimate can still be considered a lower bound, which still gives us some information, and also shows us, even with our strong assumptions, how little we actually know.
-
-
-```{r }
-
-plot.p(lns,
-       post.label="Lower Bound Post-test: p(dz+|test-,sx,ad)",xlab="Pre-test: p(dz+|sx,ad)",
-       leg.labels=c(TeX("sx+,adult+"),TeX("sx-,adult+")),main="Prince-Guerra, 2021"
-       )
-
-```
-
 
 
 # Ideally:
