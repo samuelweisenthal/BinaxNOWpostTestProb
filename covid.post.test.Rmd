@@ -110,8 +110,8 @@ plot(c(0,0),pch=0,xlim=c(0,1),ylim=c(0,1),
      xlab=xlab,ylab=post.label,
      lty=1,lwd=lwd.point,main=main,col='white')
 
-xseq = seq(0,1,0.1)
-yseq = seq(0,1,0.1)
+xseq = seq(0,1,0.05)
+yseq = seq(0,1,0.05)
 grid.col=rgb(0,0,0,alpha=0.1)
 for(x in xseq){
   abline(v=x,col=grid.col)
@@ -503,29 +503,16 @@ plot.p(pts,
 colorBlindBlack8  <- c("#000000", "#E69F00", "#56B4E9", "#009E73", 
                        "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
 
-points(.2,pdzptsnsxp,col=colorBlindBlack8[1],pch=19)
+points(pdz,pdzptsnsxp,col=colorBlindBlack8[1],pch=19)
 points(pdzpsxp,pdzptsnsxp,col=colorBlindBlack8[1],pch=19)
-points(.2,pdzptsn,col=colorBlindBlack8[2],pch=19)
-points(.2,pdzptsnsxn,col=colorBlindBlack8[3],pch=19)
+points(pdz,pdzptsn,col=colorBlindBlack8[2],pch=19)
+points(pdz,pdzptsnsxn,col=colorBlindBlack8[3],pch=19)
 points(pdzpsxn,pdzptsnsxn,col=colorBlindBlack8[3],pch=19)
 #points(.4,.4,col=rgb(0,0,0,alpha=0.1),pch=19)
 
 ```
-```{r }
 
-#cbind(pts$`Conditional sx+`$m*psxptsn + pts$`Conditional sx-`$m*psxntsn,
-#pts$$p(dz+|test-)$$m)
-```
-
-
-This corresponds to what we see with  $p(dz+|test-,sx)$ from [@prince2021evaluation] with $p(dz+|test-)$  [@bruemmer2021accuracy]. Both are contrary to my expectation.  I will have to think more about this.  I am pretty sure the following probability statement, copied from above, is not wrong...
-
-$$
-p(dz+|test-) = p(dz+|test-,sx+)p(sx+|test-)+p(dz+|test-,sx-)p(sx-|test-)
-$$
-Doesn't this imply that the $p(dz+|test-)$  should be closer to $p(dz+|test-,sx-),$ since $p(sz-|test-)$ is larger? 
-
-In any case, it should be certain that the $p(dz+|test-)$ falls within the conditionals.  It should be certain that the $p(dz+|test-)$ might be closer to one than to another. It is therefore the case that how much you will lose out by constraining yourself to the study covariates depends on your covariates.   
+Oh man. This corresponds to what we see with  $p(dz+|test-,sx)$ from [@prince2021evaluation] with $p(dz+|test-)$  [@bruemmer2021accuracy]. The implication is that if there is a mismatch between the covariates of the study and our own covariates, we can get into a lot of trouble. Consider the lines above and below the point for $p(dz+|test-)$ at the true prevalence of $p(dz+)=0.2.$ We have that the marginal is closer to $p(dz+|test-,sx+).$  However, consider the points at $p(dz+),$ which correpond to $p(dz+|test-,sx)$ at $p(dz+|sx).$  We have that the marginal is closer to $p(dz+|test-,sx-)!$  The latter is correct.
 
 ## Bound for post-test probability given exposure
 
