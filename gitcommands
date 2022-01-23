@@ -1,0 +1,2 @@
+git commit -a -m "Edited"
+git push --all
