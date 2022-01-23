@@ -68,8 +68,7 @@ Here, I am going to use this equation to calculate the post-test probability giv
 
 ## Implementation
 
-I am going to show my code to promote transparency and reproducibility.  [You can find the notebook in my GitHub. You are free to use and modify this code as long as you allow others to use and modify your modification of this code.  Use this code at your own risk, and I will not be responsible for maintenance.]
-
+I am going to show my code to promote transparency and reproducibility.  I have decided finally not however to show the plots in this document.  I am doing this because I am not sure actually that the world will be better off with these plots.  I am not sure if they are usable.  If you want to uncomment this code and see these plots, feel free to do so. [You can find the notebook in my GitHub. You are free to use and modify this code as long as you allow others to use and modify your modification of this code.  Use this code at your own risk, and I will not be responsible for maintenance.]  However, if you do not have the training necessary to understand what I wrote above about the covariates for the pretest needing to be the same as the covariates for the operating characteristic, I would encourage you not to try to interpret your own test result.  
 We start with the likelihood ratio.
 
 
@@ -248,7 +247,7 @@ We will plot now the post test probabilities for each test as a function of the 
 
 ## Plots using [@bruemmer2021accuracy]
 
-```{r }
+```{r , results="hide"}
 
 #par(mfrow=c(12,1))
 for (k in 1:12){
@@ -342,7 +341,7 @@ lns = list(l.6,l.36)
 
 Now, let us plot.
 
-```{r }
+```{r ,results="hide"}
 
 pts=get.t.posts(tests)
 #pts$BinaxNOW
