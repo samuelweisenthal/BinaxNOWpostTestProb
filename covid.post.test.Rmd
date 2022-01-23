@@ -112,12 +112,13 @@ plot(c(0,0),pch=0,xlim=c(0,1),ylim=c(0,1),
 
 xseq = seq(0,1,0.1)
 yseq = seq(0,1,0.1)
+grid.col=rgb(0,0,0,alpha=0.1)
 for(x in xseq){
-  abline(v=x,col='gray')
+  abline(v=x,col=grid.col)
 }
 
 for(y in yseq){
-  abline(h=y,col='gray')
+  abline(h=y,col=grid.col)
 }
 colorBlindBlack8  <- c("#000000", "#E69F00", "#56B4E9", "#009E73", 
                        "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
@@ -350,8 +351,8 @@ lns = list(l.6,l.36,pts$BinaxNOW)
 
 plot.p(lns,
        post.label=" p(dz+|test-,...)",xlab="Pre-test: p(dz+|...)",
-       leg.labels=c(TeX("sx+,adult+ (Prince-Guerra)"),
-                    TeX("sx-,adult+ (Prince-Geurra)"),"sx null, adult null, (Brummer)"),
+       leg.labels=c(TeX("p(dz+|test-,sx+) (Prince-Guerra)"),
+                    TeX("p(dz+|test-,sx-) (Prince-Geurra)"),"p(dz+|test-), (Brummer)"),
        main="Prince-Guerra vs Brummer"
        )
 
@@ -475,17 +476,17 @@ So, everything seems to work  out. Now let us plot a similar diagram to the one 
 ```{r }
 tests=list(
 condsxp=list(
-  nm='Conditional sx+',
+  nm='p(dz+|test-, sx+)',
   sens=list(m=ptspdzpsxp,l=ptspdzpsxp,u=ptspdzpsxp),
   spec=list(m=ptsndznsxp,l=ptsndznsxp,u=ptsndznsxp)
   ),
 marg=list(
-  nm='$p(dz+|test-)$',
+  nm='p(dz+|test-)',
   sens=list(m=ptspdzp,l=ptspdzp,u=ptspdzp),
   spec=list(m=ptsndzn,l=ptsndzn,u=ptsndzn)
 ),
 condsxn=list(
-  nm='Conditional sx-',
+  nm='p(dz+|test-, sx-)',
   sens=list(m=ptspdzpsxn,l=ptspdzpsxn,u=ptspdzpsxn),
   spec=list(m=ptsndznsxn,l=ptsndznsxn,u=ptsndznsxn)
   )
@@ -495,13 +496,23 @@ pts=get.t.posts(tests)
 
 plot.p(pts,
        post.label="p(dz+|test-,...)",xlab="Pre-test: p(dz+|...)",
-       leg.labels=c(TeX("p(dz+|test-,sx+)")," p(dz+|test-)",
+       leg.labels=c(TeX("p(dz+|test-,sx+)"),"p(dz+|test-)",
                     TeX("p(dz+|test-,sx-)")),
-       main="p(dz+|test-,sx+) vs. p(dz+|test-) (simulation)"
+       main="Simulation of p(dz+|test-,sx+) vs. p(dz+|test-)"
        )
+colorBlindBlack8  <- c("#000000", "#E69F00", "#56B4E9", "#009E73", 
+                       "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
+
+points(.2,pdzptsnsxp,col=colorBlindBlack8[1],pch=19)
+points(pdzpsxp,pdzptsnsxp,col=colorBlindBlack8[1],pch=19)
+points(.2,pdzptsn,col=colorBlindBlack8[2],pch=19)
+points(.2,pdzptsnsxn,col=colorBlindBlack8[3],pch=19)
+points(pdzpsxn,pdzptsnsxn,col=colorBlindBlack8[3],pch=19)
+#points(.4,.4,col=rgb(0,0,0,alpha=0.1),pch=19)
 
 ```
 ```{r }
+
 #cbind(pts$`Conditional sx+`$m*psxptsn + pts$`Conditional sx-`$m*psxntsn,
 #pts$$p(dz+|test-)$$m)
 ```
