@@ -37,7 +37,7 @@ The database and corresponding model would be updated in real-time based on geog
 
 We would also make sure to get as much information as possible.  Ideally, the test result would be a continuous variable (eg, amount of viral load). This may be difficult due to at-home testing kit constraints. However, it seems that there is some cutoff above which a test is called positive. If it is possible for the tests to convey more information, such as through color or some type of numerical scale, it would lead to better estimates of the post-test probability (assuming there is no real hard cutoff - I am not sure).
 
-To begin this document, I will consider the easier problem of estimating post-test probability given a negative test only, with no exposure.  In other words, let us forget about the conditional post-test probability,  $p(dz+|test-,exposure),$ and consider the "$p(dz+|test-)$".  
+To begin this document, I will consider the easier problem of estimating post-test probability given a negative test only, with no exposure.  In other words, let us forget about the conditional post-test probability,  $p(dz+|test-,exposure),$ and consider  "$p(dz+|test-)$".  
 
 ## The difficulty of pre-test probability $p(dz+)$
 
@@ -68,7 +68,7 @@ Here, I am going to use this equation to calculate the post-test probability giv
 
 ## Implementation
 
-I am going to show my code to promote transparency and reproducibility.  I have decided finally not however to show the plots in this document.  I am doing this because I am not sure actually that the world will be better off with these plots than without them.  I am not sure if they are usable due to the "trap" mentioned above.  If you want to uncomment this code and see these plots, feel free to do so. [You can find the notebook in my GitHub. You are free to use and modify this code as long as you allow others to use and modify your modification of this code.  Use this code at your own risk, and I will not be responsible for maintenance.]  However, if you do not have training such that it is completely clear to you what was written above about the covariates for the pretest needing to be the same as the covariates for the operating characteristic, I would encourage you not to try to interpret your own test result (I would not try to fix my own furnace, either). This is of course assuming I have been clear and I am not wrong, and it is always possible that I am wrong.
+I am going to show my code to promote transparency and reproducibility.  I have decided finally not however to show the plots in this document.  I am doing this because, although it was a ton of work to make these plots, I am not sure actually that the world will be better off with them  I am not sure if they are usable due to the "trap" mentioned above.  If you want to uncomment this code and see these plots, feel free to do so. You can find the markdown file in my GitHub at \url{https://github.com/samuelweisenthal/BinaxNOWpostTestProb}. You are free to use and modify this code as long as you allow others to use and modify your modification of this code.  Use this code at your own risk, and I will not be responsible for maintenance.
 
 
 To implement, we start with the likelihood ratio.
