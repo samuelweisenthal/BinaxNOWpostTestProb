@@ -41,7 +41,7 @@ To begin this document, I will consider the easier problem of estimating post-te
 
 ## The difficulty of pre-test probability $p(dz+)$
 
-Before doing this, however, let us consider an even simpler problem: $p(dz+).$  We will need to have some sense of this in order to estimate $p(dz+|test-)$ with the information that I have available (we would not need to estimate $p(dz+)$ if we had other data available).  The quantity $P(dz+)$ is commonly called the "pretest" probability.  Often, it is considered to be prevalence.  However, this is a very nebulous estimand.  We almost never think of a pure, unconditional probability [@moons2003sensitivity].  Also, if we want to use it to then estimate $p(dz+|test-),$ it must be somewhat constrained.  I show the derivation below partly to show that $p(dz+)$ must align with $p(test-|dz+).$ Often, $p(test-|dz+)$ is conditional on things that are not mentioned explicitly.  Hence, we need to estimate $p(dz+)$ conditional on covariates that were possibly not even reported in the study that evaluated the test.  Hence, estimating $p(dz+)$ is quite difficult, and the estimate cannot be  "what you expect your pretest probability is." It also cannot be your best guess at your probability of the disease given your current characterstics, such as symptoms, location, etc. It cannot be estimated based on more or less information than was collected in the study that evaluated the test operating characteristics. 
+Before doing this, however, let us consider an even simpler problem: $p(dz+).$  We will need to have some sense of this in order to estimate $p(dz+|test-)$ with the information that I have available (we would not need to estimate $p(dz+)$ if we had other data available).  The quantity $P(dz+)$ is commonly called the "pretest" probability.  Often, it is considered to be prevalence.  However, this is a very nebulous estimand.  We almost never think of a pure, unconditional probability [@moons2003sensitivity].  Also, if we want to use it to then estimate $p(dz+|test-),$ it must be somewhat constrained.  I show the derivation below partly to show that $p(dz+)$ must align with $p(test-|dz+).$ Often, $p(test-|dz+)$ is conditional on things that are not mentioned explicitly.  Hence, we need to estimate $p(dz+)$ conditional on covariates that were possibly not even reported in the study that evaluated the test.  Hence, estimating $p(dz+)$ is quite difficult, and the estimate cannot be  "what you expect your pretest probability is." It also cannot be your best guess at your probability of the disease given your current characterstics, such as symptoms, location, etc. This is a trap that is tempting to fall into.  *Pretest probability cannot be estimated based on more or less information than was collected in the study that evaluated the test operating characteristics.* 
 
 In some ways, it may be best to stop here. However, I needed an answer at the time, and it is likely that many need an answer now.  So, we will proceed with what we have.  It is worth noting that the approach that I will take, using Bayes rule, is the standard approach in the literature (see, for example, on the general use of Bayes rule [@akobeng2007understanding]; more specifically, for covid-19, see [@good2020interpreting; @watson2020interpreting; @stites2020interpretation]).
 
@@ -68,8 +68,10 @@ Here, I am going to use this equation to calculate the post-test probability giv
 
 ## Implementation
 
-I am going to show my code to promote transparency and reproducibility.  I have decided finally not however to show the plots in this document.  I am doing this because I am not sure actually that the world will be better off with these plots.  I am not sure if they are usable.  If you want to uncomment this code and see these plots, feel free to do so. [You can find the notebook in my GitHub. You are free to use and modify this code as long as you allow others to use and modify your modification of this code.  Use this code at your own risk, and I will not be responsible for maintenance.]  However, if you do not have the training necessary to understand what I wrote above about the covariates for the pretest needing to be the same as the covariates for the operating characteristic, I would encourage you not to try to interpret your own test result.  
-We start with the likelihood ratio.
+I am going to show my code to promote transparency and reproducibility.  I have decided finally not however to show the plots in this document.  I am doing this because I am not sure actually that the world will be better off with these plots than without them.  I am not sure if they are usable due to the "trap" mentioned above.  If you want to uncomment this code and see these plots, feel free to do so. [You can find the notebook in my GitHub. You are free to use and modify this code as long as you allow others to use and modify your modification of this code.  Use this code at your own risk, and I will not be responsible for maintenance.]  However, if you do not have training such that it is completely clear to you what was written above about the covariates for the pretest needing to be the same as the covariates for the operating characteristic, I would encourage you not to try to interpret your own test result (I would not try to fix my own furnace, either). This is of course assuming I have been clear and I am not wrong, and it is always possible that I am wrong.
+
+
+To implement, we start with the likelihood ratio.
 
 
 ```{r }
@@ -247,7 +249,7 @@ We will plot now the post test probabilities for each test as a function of the 
 
 ## Plots using [@bruemmer2021accuracy]
 
-```{r , results="hide"}
+```{r , fig.show='hide'}
 
 #par(mfrow=c(12,1))
 for (k in 1:12){
@@ -341,7 +343,7 @@ lns = list(l.6,l.36)
 
 Now, let us plot.
 
-```{r ,results="hide"}
+```{r ,fig.show='hide'}
 
 pts=get.t.posts(tests)
 #pts$BinaxNOW
