@@ -88,7 +88,7 @@ post.test.prob = function(sens,spec,pretest){
 Let us compute the post-test probability over a grid of pre-test probabilities.
 
 ```{r }
-pre.tests = seq(0,1,0.01)
+pre.tests = seq(0,1,0.005)
 get.post.tests = function(sens,spec,pre.tests){
 post.tests = c()
 for(i in 1:length(pre.tests)){
@@ -110,8 +110,8 @@ plot(c(0,0),pch=0,xlim=c(0,1),ylim=c(0,1),
      xlab=xlab,ylab=post.label,
      lty=1,lwd=lwd.point,main=main,col='white')
 
-xseq = seq(0,1,0.05)
-yseq = seq(0,1,0.05)
+xseq = seq(0,1,0.1)
+yseq = seq(0,1,0.1)
 grid.col=rgb(0,0,0,alpha=0.1)
 for(x in xseq){
   abline(v=x,col=grid.col)
@@ -512,11 +512,11 @@ points(pdzpsxn,pdzptsnsxn,col=colorBlindBlack8[3],pch=19)
 
 ```
 
-Oh man. This corresponds to what we see with  $p(dz+|test-,sx)$ from [@prince2021evaluation] with $p(dz+|test-)$  [@bruemmer2021accuracy]. The implication is that if there is a mismatch between the covariates of the study and our own covariates, we can get into a lot of trouble. Consider the lines above and below the point for $p(dz+|test-)$ at the true prevalence of $p(dz+)=0.2.$ We have that the marginal is closer to $p(dz+|test-,sx+).$  However, consider the points at $p(dz+),$ which correpond to $p(dz+|test-,sx)$ at $p(dz+|sx).$  We have that the marginal is closer to $p(dz+|test-,sx-)!$  The latter is correct.
+This corresponds to what we see with  $p(dz+|test-,sx)$ from [@prince2021evaluation] with $p(dz+|test-)$  [@bruemmer2021accuracy]. The implication is that if there is a mismatch between the covariates of the study and our own covariates, we can get into a lot of trouble. Consider the lines above and below the point for $p(dz+|test-)$ at the true prevalence of $p(dz+)=0.2.$ We have that $p(dz+|test-)$ is closer to $p(dz+|test-,sx+).$  However, consider the points at $p(dz+),$ which correpond to $p(dz+|test-,sx)$ at $p(dz+|sx).$  We have that $p(dz+|test-)$  is closer to $p(dz+|test-,sx-)!$  The latter is correct.
 
 ## Bound for post-test probability given exposure
 
-Recall that my original question was whether I had the disease given a sustained exposure.  Unfortunately, [@prince2021evaluation] does not give us operating characteristics that depend on exposure (although they do tell us that it is relevant).  However, the following section is just some musings on possibly being able to make a statement like "disease probabilty is greater than this value, even though we know it is not this value precisely." We can say, for example, $p(dz+|test-)\leq p(dz+|test-,exposure+),$ which is based on the fact that a sustained exposure increases probability of disease.
+Recall that my original question was whether I had the disease given a sustained exposure.  Unfortunately, [@prince2021evaluation] does not give us operating characteristics that depend on exposure (although their data do suggest to us that it is relevant).  However, the following section is just some musings on possibly being able to make a statement like "disease probabilty is greater than this value, even though we know it is not this value precisely." We can say, for example, $p(dz+|test-)\leq p(dz+|test-,exposure+),$ which is based on the fact that a sustained exposure increases probability of disease.
 
 We can also somewhat more circuitously write (just to see the term $p(dz+|sx,ad,test-)$ explicitly within $p(dz+|test-,sx,ad,exposure + )$)
 
