@@ -68,7 +68,7 @@ Here, I am going to use this equation to calculate the post-test probability giv
 
 ## Implementation
 
-I am going to show my code to promote transparency and reproducibility.  I have decided finally not however to show the plots in this document.  I am doing this because, although it was a ton of work to make these plots, I am not sure actually that the world will be better off with them  I am not sure if they are usable due to the "trap" mentioned above.  If you want to uncomment this code and see these plots, feel free to do so. You can find the markdown file in my GitHub at \url{https://github.com/samuelweisenthal/BinaxNOWpostTestProb}. You are free to use and modify this code as long as you allow others to use and modify your modification of this code.  Use this code at your own risk, and I will not be responsible for maintenance.
+I am going to show my code to promote transparency and reproducibility.  I have decided finally not however to show the plots in this document.  I am doing this because, although it was a ton of work to make these plots, I am not sure actually that the world will be better off with them than it would be without them.  I am not sure if they are usable due to the "trap" mentioned above.  If you want to uncomment this code and see these plots, feel free to do so. You can find the markdown file in my GitHub at \url{https://github.com/samuelweisenthal/BinaxNOWpostTestProb}. You are free to use and modify this code as long as you allow others to use and modify your modification of this code.  Use this code at your own risk, and I will not be responsible for maintenance.
 
 
 To implement, we start with the likelihood ratio.
