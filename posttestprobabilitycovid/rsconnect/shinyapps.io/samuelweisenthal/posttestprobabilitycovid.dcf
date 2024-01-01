@@ -1,0 +1,12 @@
+name: posttestprobabilitycovid
+title: posttestprobabilitycovid
+username: samuelweisenthal
+account: samuelweisenthal
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 10849765
+bundleId: 8097518
+url: https://samuelweisenthal.shinyapps.io/posttestprobabilitycovid/
+version: 1
+asMultiple: FALSE
+asStatic: FALSE
